@@ -13,6 +13,7 @@ import {
   Vote,
 } from "@acme/db/schema";
 
+import { flagContentIfNeeded } from "../../lib/content-filter";
 import { notifyResultsAvailable, notifyRoundStarted, notifyVotingOpen } from "../../lib/email/notifications";
 import { pushNotifyResultsAvailable, pushNotifyRoundStarted, pushNotifyVotingOpen } from "../../lib/push/notifications";
 import { createPlaylist, searchTracks } from "../../lib/spotify";
@@ -190,8 +191,7 @@ export const musicLeagueRouter = {
         });
       });
 
-      // TODO: Wire content moderation in step 6
-      // void flagContentIfNeeded("LEAGUE", leagueId, [input.name, input.description].filter(Boolean).join(" "));
+      void flagContentIfNeeded("LEAGUE", leagueId, [input.name, input.description].filter(Boolean).join(" "));
 
       return { id: leagueId };
     }),
@@ -412,10 +412,9 @@ export const musicLeagueRouter = {
         void pushNotifyRoundStarted(round.id);
       }
 
-      // TODO: Wire content moderation in step 6
-      // if (round?.id) {
-      //   void flagContentIfNeeded("ROUND", round.id, [input.themeName, input.themeDescription].filter(Boolean).join(" "));
-      // }
+      if (round?.id) {
+        void flagContentIfNeeded("ROUND", round.id, [input.themeName, input.themeDescription].filter(Boolean).join(" "));
+      }
 
       return round;
     }),
@@ -859,9 +858,8 @@ export const musicLeagueRouter = {
 
       await ctx.db.update(League).set(setValues).where(eq(League.id, leagueId));
 
-      // TODO: Wire content moderation in step 6
-      // const textToCheck = [updates.name, updates.description].filter(Boolean).join(" ");
-      // if (textToCheck) void flagContentIfNeeded("LEAGUE", leagueId, textToCheck);
+      const textToCheck = [updates.name, updates.description].filter(Boolean).join(" ");
+      if (textToCheck) void flagContentIfNeeded("LEAGUE", leagueId, textToCheck);
 
       return { success: true };
     }),
