@@ -13,6 +13,8 @@ import {
   Vote,
 } from "@acme/db/schema";
 
+import { notifyResultsAvailable, notifyRoundStarted, notifyVotingOpen } from "../../lib/email/notifications";
+import { pushNotifyResultsAvailable, pushNotifyRoundStarted, pushNotifyVotingOpen } from "../../lib/push/notifications";
 import { createPlaylist, searchTracks } from "../../lib/spotify";
 import { protectedProcedure, publicProcedure } from "../../trpc";
 
@@ -405,11 +407,10 @@ export const musicLeagueRouter = {
         })
         .returning();
 
-      // TODO: Wire notifications in step 5
-      // if (round?.id && status === "SUBMISSION") {
-      //   void notifyRoundStarted(round.id);
-      //   void pushNotifyRoundStarted(round.id);
-      // }
+      if (round?.id && status === "SUBMISSION") {
+        void notifyRoundStarted(round.id);
+        void pushNotifyRoundStarted(round.id);
+      }
 
       // TODO: Wire content moderation in step 6
       // if (round?.id) {
@@ -951,14 +952,13 @@ export const musicLeagueRouter = {
         .set({ status: nextStatus })
         .where(eq(Round.id, input.roundId));
 
-      // TODO: Wire notifications in step 5
-      // if (nextStatus === "VOTING") {
-      //   void notifyVotingOpen(input.roundId);
-      //   void pushNotifyVotingOpen(input.roundId);
-      // } else if (nextStatus === "RESULTS") {
-      //   void notifyResultsAvailable(input.roundId);
-      //   void pushNotifyResultsAvailable(input.roundId);
-      // }
+      if (nextStatus === "VOTING") {
+        void notifyVotingOpen(input.roundId);
+        void pushNotifyVotingOpen(input.roundId);
+      } else if (nextStatus === "RESULTS") {
+        void notifyResultsAvailable(input.roundId);
+        void pushNotifyResultsAvailable(input.roundId);
+      }
 
       // When a round completes, activate any PENDING round in the same league
       if (nextStatus === "COMPLETED") {
@@ -1002,9 +1002,8 @@ export const musicLeagueRouter = {
               })
               .where(eq(Round.id, pendingRound.id));
 
-            // TODO: Wire notifications in step 5
-            // void notifyRoundStarted(pendingRound.id);
-            // void pushNotifyRoundStarted(pendingRound.id);
+            void notifyRoundStarted(pendingRound.id);
+            void pushNotifyRoundStarted(pendingRound.id);
           }
         }
       }
