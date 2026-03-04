@@ -34,14 +34,14 @@ catalogs:
 linkWorkspacePackages: true
 
 onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
+  - '@tailwindcss/oxide'
   - esbuild
 
 overrides:
-  "@types/minimatch": 5.1.2
+  '@types/minimatch': 5.1.2
   lightningcss: 1.31.1
   vite: 7.1.12
 
 publicHoistPattern:
-  - "@ianvs/prettier-plugin-sort-imports"
+  - '@ianvs/prettier-plugin-sort-imports'
   - prettier-plugin-tailwindcss

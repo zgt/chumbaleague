@@ -18,8 +18,8 @@ Create a `.env.example` file at the repo root with all required env vars:
 
 ```env
 # Database (Vercel Postgres / Neon)
-DATABASE_URL=
-DATABASE_URL_NON_POOLING=
+POSTGRES_URL=
+POSTGRES_URL_NON_POOLING=
 
 # Better Auth
 BETTER_AUTH_SECRET=

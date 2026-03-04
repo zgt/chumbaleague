@@ -197,7 +197,7 @@ This is critical — the API returns different data based on round status:
 Required in `.env` at repo root:
 
 ```bash
-DATABASE_URL=              # Supabase PostgreSQL connection string (pooler, port 6543)
+POSTGRES_URL=              # Supabase PostgreSQL connection string (pooler, port 6543)
 AUTH_SECRET=               # openssl rand -base64 32
 AUTH_DISCORD_ID=           # Discord OAuth client ID
 AUTH_DISCORD_SECRET=       # Discord OAuth client secret
