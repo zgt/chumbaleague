@@ -21,7 +21,8 @@
     "./alert-dialog": "./src/alert-dialog.tsx",
     "./select": "./src/select.tsx",
     "./textarea": "./src/textarea.tsx",
-    "./checkbox": "./src/checkbox.tsx"
+    "./checkbox": "./src/checkbox.tsx",
+    "./switch": "./src/switch.tsx"
   },
   "license": "MIT",
   "scripts": {
