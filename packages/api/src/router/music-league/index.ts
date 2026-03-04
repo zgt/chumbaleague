@@ -13,6 +13,7 @@ import {
   Vote,
 } from "@acme/db/schema";
 
+import { createPlaylist, searchTracks } from "../../lib/spotify";
 import { protectedProcedure, publicProcedure } from "../../trpc";
 
 // Helper for invite codes
@@ -310,10 +311,7 @@ export const musicLeagueRouter = {
       }),
     )
     .query(async ({ input }) => {
-      // TODO: Wire Spotify integration in step 4
-      // return searchTracks(input.query, Math.min(input.limit, 10));
-      void input;
-      return [];
+      return searchTracks(input.query, Math.min(input.limit, 10));
     }),
 
   // --- ROUND PROCEDURES ---
@@ -1092,14 +1090,12 @@ export const musicLeagueRouter = {
         });
       }
 
-      // TODO: Wire Spotify integration in step 4
-      // const playlistName = `${round.league.name} - ${round.themeName}`;
-      // const playlistUrl = await createPlaylist(
-      //   playlistName,
-      //   `Round ${round.roundNumber}: ${round.themeName}`,
-      //   submissions.map((s) => s.spotifyTrackId),
-      // );
-      const playlistUrl = "";
+      const playlistName = `${round.league.name} - ${round.themeName}`;
+      const playlistUrl = await createPlaylist(
+        playlistName,
+        `Round ${round.roundNumber}: ${round.themeName}`,
+        submissions.map((s) => s.spotifyTrackId),
+      );
 
       await ctx.db
         .update(Round)
