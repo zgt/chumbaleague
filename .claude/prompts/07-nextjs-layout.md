@@ -79,7 +79,11 @@ If auth config references "tokilist://" in trusted origins, update to "chumbalea
 
 ### 7. Styling
 
+Copy over the DotBackground component and logic from tokilist. I want to reuse that as well as the ripple trigger on mutations.
+
 Keep the existing Tailwind setup from the scaffold. The tokilist music pages use a dark theme with teal/emerald accents — you can follow that pattern or establish a new Chumbaleague design system. At minimum:
+
+
 
 - Dark background
 - Good contrast for readability
