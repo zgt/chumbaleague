@@ -6,6 +6,22 @@ export const user = pgTable("user", (t) => ({
   email: t.text().notNull().unique(),
   emailVerified: t.boolean().notNull(),
   image: t.text(),
+  // Custom field — NOT managed by better-auth. Do not let `pnpm auth:generate` overwrite this.
+  notificationPreferences: t
+    .jsonb()
+    .$type<{
+      roundStart: boolean;
+      submissionReminder: boolean;
+      votingOpen: boolean;
+      resultsAvailable: boolean;
+    }>()
+    .default({
+      roundStart: true,
+      submissionReminder: true,
+      votingOpen: true,
+      resultsAvailable: true,
+    })
+    .notNull(),
   createdAt: t.timestamp().notNull(),
   updatedAt: t.timestamp().notNull(),
 }));
