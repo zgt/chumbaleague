@@ -1,0 +1,100 @@
+import { useEffect } from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import {
+  Easing,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { Canvas, Fill, Shader, Skia } from "@shopify/react-native-skia";
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } =
+  Dimensions.get("window");
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- static shader source is always valid
+const source = Skia.RuntimeEffect.Make(`
+  uniform float2 resolution;
+  uniform float rippleTime;
+  uniform float2 rippleCenter;
+  uniform float rippleIntensity;
+  uniform float gridSize;
+  uniform float dotOpacity;
+
+  float sdfCircle(float2 p, float r) {
+    return length(p - 0.5) - r;
+  }
+
+  half4 main(float2 fragCoord) {
+    float2 uv = fragCoord / resolution;
+    float aspect = resolution.x / resolution.y;
+
+    // Dot grid
+    float2 gridUv = fract(uv * float2(gridSize * aspect, gridSize));
+    float dot = smoothstep(0.02, 0.0, sdfCircle(gridUv, 0.07));
+
+    // Ripple
+    float ripple = 0.0;
+    if (rippleIntensity > 0.0) {
+      float dist = distance(uv * float2(aspect, 1.0), rippleCenter * float2(aspect, 1.0));
+      float speed = 2.0;
+      float frequency = 20.0;
+      float baseWave = sin(dist * frequency - rippleTime * speed);
+      float sharpWave = pow(baseWave * 0.5 + 0.5, 10.0);
+      float decay = exp(-dist * 1.0);
+      float wavefront = rippleTime * 0.15;
+      float waveMask = 1.0 - smoothstep(wavefront - 0.1, wavefront, dist);
+      ripple = sharpWave * decay * rippleIntensity * waveMask;
+    }
+
+    // Dark purple/magenta theme
+    float dotMask = dot * dotOpacity * (1.0 + ripple * 20.0);
+    half3 bg = half3(0.06, 0.04, 0.10);
+    half3 dotColor = half3(0.20, 0.08, 0.25);
+    half3 color = mix(bg, dotColor, half(dotMask));
+    return half4(color, 1.0);
+  }
+`)!;
+
+interface DotBackgroundProps {
+  trigger?: number;
+}
+
+export function DotBackground({ trigger }: DotBackgroundProps) {
+  const rippleTime = useSharedValue(0);
+  const rippleIntensity = useSharedValue(0);
+
+  useEffect(() => {
+    if (trigger === undefined) return;
+    if (rippleIntensity.value > 0.1) return;
+
+    rippleTime.value = 0;
+    rippleIntensity.value = 1;
+    rippleTime.value = withTiming(10, {
+      duration: 5000,
+      easing: Easing.linear,
+    });
+    rippleIntensity.value = withTiming(0, {
+      duration: 6000,
+      easing: Easing.out(Easing.quad),
+    });
+  }, [trigger, rippleTime, rippleIntensity]);
+
+  const uniforms = useDerivedValue(() => ({
+    resolution: [SCREEN_WIDTH, SCREEN_HEIGHT] as const,
+    rippleTime: rippleTime.value,
+    rippleCenter: [0.5, 0.5] as const,
+    rippleIntensity: rippleIntensity.value,
+    gridSize: 50,
+    dotOpacity: 4,
+  }));
+
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Canvas style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
+        <Fill>
+          <Shader source={source} uniforms={uniforms} />
+        </Fill>
+      </Canvas>
+    </View>
+  );
+}

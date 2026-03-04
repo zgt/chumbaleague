@@ -66,6 +66,7 @@ Set up:
 - Theme (dark mode)
 - Stack navigator with screens
 - StatusBar configuration
+- Copy the Dotbackground with ripple/refresh logic
 
 Reference the existing scaffold layout and the tokilist root layout.
 
