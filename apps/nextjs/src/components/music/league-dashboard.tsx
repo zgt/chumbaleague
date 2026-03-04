@@ -75,9 +75,9 @@ export function LeagueDashboard() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         {/* Leagues grid */}
-        <div className="space-y-4 lg:col-span-2">
+        <div className="space-y-4 md:col-span-2">
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2].map((i) => (

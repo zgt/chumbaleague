@@ -68,7 +68,7 @@ function NotificationForm({
   };
 
   return (
-    <Card className="glass-card border-white/5">
+    <Card>
       <CardHeader>
         <CardTitle>Notifications</CardTitle>
       </CardHeader>
@@ -101,7 +101,7 @@ function NotificationForm({
         </Button>
 
         {updatePrefs.isSuccess && !dirty && (
-          <p className="text-primary text-center text-sm">Preferences saved</p>
+          <p className="text-center text-sm text-emerald-400">Preferences saved</p>
         )}
       </CardContent>
     </Card>
@@ -128,7 +128,7 @@ export default function SettingsPage() {
         ) : (
           <div className="space-y-6">
             {/* Account info */}
-            <Card className="glass-card border-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle>Account</CardTitle>
               </CardHeader>

@@ -40,7 +40,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14">
                 <AvatarImage src={session?.user?.image ?? undefined} />
-                <AvatarFallback className="bg-primary/20 text-lg">
+                <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-lg">
                   {session?.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
                 </AvatarFallback>
               </Avatar>
@@ -55,7 +55,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 {
                   label: "Total Points",
@@ -78,10 +78,10 @@ export default function ProfilePage() {
                   icon: Disc3,
                 },
               ].map((stat) => (
-                <Card key={stat.label} className="glass-card border-white/5">
+                <Card key={stat.label}>
                   <CardContent className="flex items-center gap-3 py-4">
-                    <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                      <stat.icon className="text-primary h-5 w-5" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
+                      <stat.icon className="h-5 w-5 text-emerald-400" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold">{stat.value}</p>
@@ -95,18 +95,20 @@ export default function ProfilePage() {
             </div>
 
             {/* Rounds participated */}
-            <div className="glass-card rounded-xl p-4">
-              <p className="text-muted-foreground text-sm">
-                Rounds Participated
-              </p>
-              <p className="text-xl font-bold">{profile.roundsParticipated}</p>
-            </div>
+            <Card>
+              <CardContent className="py-4">
+                <p className="text-muted-foreground text-sm">
+                  Rounds Participated
+                </p>
+                <p className="text-xl font-bold">{profile.roundsParticipated}</p>
+              </CardContent>
+            </Card>
 
             {/* Best submission */}
             {profile.bestSubmission && (
               <div>
                 <h2 className="mb-3 text-lg font-semibold">Best Submission</h2>
-                <Card className="glass-card border-white/5">
+                <Card>
                   <CardContent className="flex items-center gap-4 py-4">
                     <Image
                       src={profile.bestSubmission.albumArtUrl}
@@ -127,7 +129,7 @@ export default function ProfilePage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-primary text-lg font-bold">
+                      <p className="text-lg font-bold text-emerald-400">
                         {profile.bestSubmission.points}
                       </p>
                       <p className="text-muted-foreground text-xs">points</p>

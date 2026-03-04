@@ -2,15 +2,33 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Home } from "lucide-react";
+
+import { useTRPC } from "~/trpc/react";
 
 function useBreadcrumbs() {
   const pathname = usePathname();
+  const trpc = useTRPC();
   const params = useParams<{
     leagueId?: string;
     roundId?: string;
     inviteCode?: string;
   }>();
+
+  const { data: league } = useQuery(
+    trpc.musicLeague.getLeagueById.queryOptions(
+      { id: params.leagueId! },
+      { enabled: !!params.leagueId },
+    ),
+  );
+
+  const { data: round } = useQuery(
+    trpc.musicLeague.getRoundById.queryOptions(
+      { roundId: params.roundId! },
+      { enabled: !!params.roundId },
+    ),
+  );
 
   const crumbs: { label: string; href: string }[] = [
     { label: "Leagues", href: "/" },
@@ -40,7 +58,7 @@ function useBreadcrumbs() {
 
   if (params.leagueId) {
     crumbs.push({
-      label: "League",
+      label: league?.name ?? "League",
       href: `/leagues/${params.leagueId}`,
     });
   }
@@ -52,8 +70,11 @@ function useBreadcrumbs() {
     });
   } else if (params.leagueId && params.roundId) {
     const isPlaylist = pathname.endsWith("/playlist");
+    const roundLabel = round
+      ? `Round ${round.roundNumber}: ${round.themeName}`
+      : "Round";
     crumbs.push({
-      label: "Round",
+      label: roundLabel,
       href: `/leagues/${params.leagueId}/rounds/${params.roundId}`,
     });
     if (isPlaylist) {
@@ -92,13 +113,13 @@ export function Breadcrumbs() {
             <div key={crumb.href} className="flex items-center gap-1.5">
               <ChevronRight className="text-muted-foreground/50 h-3.5 w-3.5" />
               {isLast ? (
-                <span className="text-foreground font-medium">
+                <span className="text-foreground max-w-[200px] truncate font-medium">
                   {crumb.label}
                 </span>
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground max-w-[200px] truncate transition-colors"
                 >
                   {crumb.label}
                 </Link>

@@ -75,7 +75,7 @@ export default function PlaylistPage() {
             </p>
             <Link
               href={`/leagues/${params.leagueId}/rounds/${params.roundId}`}
-              className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
             >
               Back to round
             </Link>
@@ -200,8 +200,8 @@ export default function PlaylistPage() {
         <Card className="mt-6">
           <CardContent>
             <div className="flex items-start gap-3">
-              <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <ListMusic className="text-primary h-5 w-5" />
+              <div className="bg-emerald-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                <ListMusic className="text-emerald-400 h-5 w-5" />
               </div>
               <div>
                 <p className="text-sm font-medium">Create your own playlist</p>

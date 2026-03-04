@@ -255,7 +255,7 @@ export function SubmitSong({ roundId, songsPerRound }: SubmitSongProps) {
             </div>
 
             {showResults && debouncedQuery && (
-              <div className="border-border bg-popover absolute right-0 left-0 z-50 mt-1 max-h-[360px] overflow-y-auto rounded-lg border shadow-lg">
+              <div className="absolute right-0 left-0 z-50 mt-1 max-h-[360px] overflow-y-auto rounded-lg border border-emerald-500/[0.08] bg-[#102A2A]/95 shadow-lg backdrop-blur-md">
                 {searchResults && searchResults.length > 0 ? (
                   <ul role="listbox" className="py-1">
                     {searchResults.map((track) => (

@@ -22,7 +22,7 @@ export function Nav() {
 
   return (
     <nav className="relative z-20">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Music className="h-6 w-6 text-emerald-400" />

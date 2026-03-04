@@ -14,8 +14,8 @@ export default async function HomePage() {
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4">
         <div className="glass-panel mx-auto max-w-md rounded-3xl p-10 text-center">
           <div className="pointer-events-none absolute top-0 left-0 h-full w-full overflow-hidden rounded-3xl">
-            <div className="bg-primary/10 absolute top-[-50%] left-[-20%] h-[80%] w-[80%] rounded-full mix-blend-screen blur-[100px]" />
-            <div className="absolute right-[-10%] bottom-[-20%] h-[60%] w-[60%] rounded-full bg-emerald-600/10 mix-blend-screen blur-[80px]" />
+            <div className="absolute top-[-50%] left-[-20%] h-[80%] w-[80%] rounded-full bg-emerald-500/[0.06] mix-blend-screen blur-[100px]" />
+            <div className="absolute right-[-10%] bottom-[-20%] h-[60%] w-[60%] rounded-full bg-emerald-600/[0.04] mix-blend-screen blur-[80px]" />
           </div>
 
           <div className="relative z-10">

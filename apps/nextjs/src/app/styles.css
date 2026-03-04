@@ -27,78 +27,68 @@
     letter-spacing: var(--tracking-normal);
     background:
       radial-gradient(
-        circle at 0% 0%,
-        rgba(74, 222, 128, 0.15) 0%,
+        ellipse at 0% 0%,
+        rgba(16, 42, 42, 0.6) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at 100% 0%,
-        rgba(74, 222, 128, 0.1) 0%,
+        ellipse at 100% 0%,
+        rgba(16, 42, 42, 0.4) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at 100% 100%,
-        rgba(74, 222, 128, 0.15) 0%,
+        ellipse at 100% 100%,
+        rgba(16, 42, 42, 0.5) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at 0% 100%,
-        rgba(74, 222, 128, 0.1) 0%,
+        ellipse at 0% 100%,
+        rgba(16, 42, 42, 0.3) 0%,
         transparent 50%
       ),
-      linear-gradient(135deg, #020404 0%, #051010 50%, #020404 100%);
+      linear-gradient(160deg, #020a0a 0%, #071414 50%, #020a0a 100%);
     background-attachment: fixed;
   }
 }
 
 @layer utilities {
   .glass-panel {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.12) 0%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
+    background: rgba(16, 42, 42, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(74, 222, 128, 0.08);
     box-shadow:
-      0 8px 32px 0 rgba(0, 0, 0, 0.37),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      0 8px 32px 0 rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 0 rgba(74, 222, 128, 0.05);
   }
 
   .glass-card {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.14) 0%,
-      rgba(255, 255, 255, 0.06) 100%
-    );
+    background: rgba(16, 42, 42, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(74, 222, 128, 0.08);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
   }
 
   .glass-card:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(255, 255, 255, 0.08) 100%
-    );
-    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(16, 42, 42, 1);
+    border-color: rgba(74, 222, 128, 0.2);
     box-shadow:
-      0 0 20px rgba(74, 222, 128, 0.1),
+      0 0 20px rgba(74, 222, 128, 0.06),
       0 8px 24px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+    text-shadow:
+      0 0 20px rgba(74, 222, 128, 0.4),
+      0 0 40px rgba(74, 222, 128, 0.15);
   }
 
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: rgba(74, 222, 128, 0.15) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -110,12 +100,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(74, 222, 128, 0.15);
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(74, 222, 128, 0.25);
   }
 }
 

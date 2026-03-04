@@ -175,7 +175,7 @@ export default function LeagueDetailPage() {
               <Users className="text-muted-foreground h-6 w-6" />
             </div>
             <div>
-              <p className="text-muted-foreground font-medium">
+              <p className="font-medium text-muted-foreground">
                 League not found
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
@@ -184,7 +184,7 @@ export default function LeagueDetailPage() {
             </div>
             <Link
               href="/"
-              className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
             >
               Back to Dashboard
             </Link>
@@ -298,9 +298,9 @@ export default function LeagueDetailPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {/* Left column: Standings + Rounds */}
-          <div className="space-y-6 lg:col-span-2">
+          <div className="space-y-6 md:col-span-2">
             {/* Standings */}
             <LeagueStandings leagueId={league.id} />
 
@@ -412,7 +412,7 @@ export default function LeagueDetailPage() {
                           <AvatarImage
                             src={member.user.image ?? undefined}
                           />
-                          <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
+                          <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-sm font-bold">
                             {member.user.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -893,7 +893,7 @@ function ReportDialog({
                   key={r.key}
                   className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
                     reason === r.key
-                      ? "border-primary bg-primary/10"
+                      ? "border-emerald-500/40 bg-emerald-500/10"
                       : "border-border hover:bg-muted"
                   }`}
                 >
@@ -907,7 +907,7 @@ function ReportDialog({
                   <div
                     className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
                       reason === r.key
-                        ? "border-primary bg-primary"
+                        ? "border-emerald-400 bg-emerald-400"
                         : "border-muted-foreground"
                     }`}
                   >

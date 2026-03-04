@@ -113,7 +113,7 @@ export default function CreateLeaguePage() {
                       onClick={() => setSubmissionWindowDays(preset.days)}
                       className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                         submissionWindowDays === preset.days
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-emerald-500 text-white"
                           : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
                       }`}
                     >
@@ -137,7 +137,7 @@ export default function CreateLeaguePage() {
                       onClick={() => setVotingWindowDays(preset.days)}
                       className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                         votingWindowDays === preset.days
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-emerald-500 text-white"
                           : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
                       }`}
                     >

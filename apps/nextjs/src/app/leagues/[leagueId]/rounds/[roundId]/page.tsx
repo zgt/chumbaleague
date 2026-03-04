@@ -84,7 +84,7 @@ function PhaseProgressBar({ status }: { status: string }) {
             {i > 0 && (
               <div
                 className={`h-0.5 w-4 sm:w-8 ${
-                  isPast ? "bg-primary" : "bg-border"
+                  isPast ? "bg-emerald-400" : "bg-border"
                 }`}
               />
             )}
@@ -92,9 +92,9 @@ function PhaseProgressBar({ status }: { status: string }) {
               <div
                 className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium ${
                   isActive
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-emerald-500 text-white"
                     : isPast
-                      ? "bg-primary/20 text-primary"
+                      ? "bg-emerald-500/20 text-emerald-400"
                       : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -226,7 +226,7 @@ export default function RoundDetailPage() {
             </div>
             <Link
               href={`/leagues/${params.leagueId}`}
-              className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
             >
               Back to League
             </Link>
@@ -321,9 +321,9 @@ export default function RoundDetailPage() {
           </Card>
         )}
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             {round.status !== "PENDING" && (
               <PhaseContent round={round} leagueId={params.leagueId} />
             )}
@@ -486,8 +486,8 @@ function PhaseContent({
         <Card>
           <CardContent>
             <div className="flex items-center gap-3 py-2 text-center">
-              <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <Music2 className="text-primary h-5 w-5" />
+              <div className="bg-emerald-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                <Music2 className="text-emerald-400 h-5 w-5" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium">Submission Phase</p>
@@ -511,8 +511,8 @@ function PhaseContent({
           <CardContent>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                  <ListMusic className="text-primary h-5 w-5" />
+                <div className="bg-emerald-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                  <ListMusic className="text-emerald-400 h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Listening Phase</p>

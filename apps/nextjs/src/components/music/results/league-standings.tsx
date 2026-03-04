@@ -97,7 +97,7 @@ export function LeagueStandings({ leagueId }: { leagueId: string }) {
                   <TableRow
                     key={entry.user.id}
                     className={`border-border/50 last:border-0 ${
-                      isCurrentUser ? "bg-primary/5" : ""
+                      isCurrentUser ? "bg-emerald-500/5" : ""
                     }`}
                   >
                     <TableCell className="py-2.5 pr-2">
@@ -111,7 +111,7 @@ export function LeagueStandings({ leagueId }: { leagueId: string }) {
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
                           <AvatarImage src={entry.user.image ?? undefined} />
-                          <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                          <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-xs font-bold">
                             {entry.user.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>

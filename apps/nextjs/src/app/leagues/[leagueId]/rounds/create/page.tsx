@@ -335,7 +335,7 @@ export default function CreateRoundPage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                     activeCategory === cat
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-emerald-500 text-white"
                       : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
                   }`}
                 >
