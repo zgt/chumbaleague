@@ -1,9 +1,5 @@
 # create-t3-turbo
 
-> [!NOTE]
->
-> create-t3-turbo now includes the option to use Tanstack Start for the web app!
-
 ## Installation
 
 > [!NOTE]
@@ -44,11 +40,6 @@ apps
   │   ├─ React 19
   │   ├─ Tailwind CSS v4
   │   └─ E2E Typesafe API Server & Client
-  └─ tanstack-start
-      ├─ Tanstack Start v1 (rc)
-      ├─ React 19
-      ├─ Tailwind CSS v4
-      └─ E2E Typesafe API Server & Client
 packages
   ├─ api
   │   └─ tRPC v11 router definition

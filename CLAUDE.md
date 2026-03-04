@@ -85,8 +85,7 @@ pnpm android          # expo run:android
 ```
 apps/
   ├── nextjs/          # Next.js 16 web app (primary)
-  ├── expo/            # Expo/React Native mobile app
-  └── tanstack-start/  # TanStack Start (pick one frontend, delete the other)
+  └── expo/            # Expo/React Native mobile app
 packages/
   ├── api/             # Shared tRPC router definitions
   ├── auth/            # Better Auth configuration

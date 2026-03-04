@@ -10,7 +10,6 @@ Remove scaffold code, set up environment, and prepare for deployment.
 - Remove `post` router from `packages/api/src/root.ts`
 - Delete `apps/nextjs/src/app/_components/posts.tsx`
 - Remove any references to the `Post` table from `packages/db/src/schema.ts` (if not already done in step 2)
-- Remove `apps/tanstack-start` directory entirely (not needed for this project)
 - Clean up the `apps/nextjs/src/app/_components/auth-showcase.tsx` if it's scaffold demo code
 
 ### 2. Environment variables
