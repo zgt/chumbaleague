@@ -4,6 +4,7 @@ import { Button } from "@acme/ui/button";
 
 import { auth, getSession } from "~/auth/server";
 import { AppShell } from "~/components/app-shell";
+import { LeagueDashboard } from "~/components/music/league-dashboard";
 
 export default async function HomePage() {
   const session = await getSession();
@@ -54,22 +55,7 @@ export default async function HomePage() {
 
   return (
     <AppShell>
-      <div className="py-4">
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold">Your Leagues</h1>
-        </div>
-        <div className="glass-card rounded-xl p-5">
-          <div className="flex flex-col items-center gap-4 py-8 text-center">
-            <p className="text-muted-foreground font-medium">
-              Welcome, {session.user.name}!
-            </p>
-            <p className="text-muted-foreground text-sm">
-              Your leagues will appear here. Create one or join with an invite
-              code.
-            </p>
-          </div>
-        </div>
-      </div>
+      <LeagueDashboard />
     </AppShell>
   );
 }
