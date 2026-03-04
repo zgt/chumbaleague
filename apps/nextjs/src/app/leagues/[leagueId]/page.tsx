@@ -58,10 +58,12 @@ import {
   SelectValue,
 } from "@acme/ui/select";
 import { Separator } from "@acme/ui/separator";
+import { Switch } from "@acme/ui/switch";
 import { Textarea } from "@acme/ui/textarea";
 
 import { authClient } from "~/auth/client";
 import { AppShell } from "~/components/app-shell";
+import { NumberStepper } from "~/components/number-stepper";
 import { LeagueStandings } from "~/components/music/results/league-standings";
 import { useTRPC } from "~/trpc/react";
 
@@ -540,6 +542,11 @@ function SettingsModal({
     submissionWindowDays: number;
     votingWindowDays: number;
     downvotePointsPerRound: number;
+    deadlineBehavior: "STEADY" | "ACCELERATED" | "SPEEDY";
+    maxUpvotesPerSong: number | null;
+    maxDownvotesPerSong: number | null;
+    votingPenalty: boolean;
+    maxMembers: number;
     members: { role: string; userId: string }[];
   };
   onLeave: () => void;
@@ -566,6 +573,17 @@ function SettingsModal({
   const [downvotePoints, setDownvotePoints] = useState(
     league.downvotePointsPerRound,
   );
+  const [deadlineBehavior, setDeadlineBehavior] = useState(
+    league.deadlineBehavior,
+  );
+  const [maxUpvotesPerSong, setMaxUpvotesPerSong] = useState(
+    league.maxUpvotesPerSong,
+  );
+  const [maxDownvotesPerSong, setMaxDownvotesPerSong] = useState(
+    league.maxDownvotesPerSong,
+  );
+  const [votingPenalty, setVotingPenalty] = useState(league.votingPenalty);
+  const [maxMembers, setMaxMembers] = useState(league.maxMembers);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const updateSettings = useMutation(
@@ -590,6 +608,11 @@ function SettingsModal({
       submissionWindowDays,
       votingWindowDays,
       downvotePointsPerRound: downvotePoints,
+      deadlineBehavior,
+      maxUpvotesPerSong,
+      maxDownvotesPerSong,
+      votingPenalty,
+      maxMembers,
     });
   };
 
@@ -688,16 +711,12 @@ function SettingsModal({
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="settings-points">
-                    Upvote Points per Round
-                  </Label>
-                  <Input
-                    id="settings-points"
-                    type="number"
+                  <Label>Upvote Points per Round</Label>
+                  <NumberStepper
+                    value={upvotePoints}
+                    onChange={setUpvotePoints}
                     min={1}
                     max={20}
-                    value={upvotePoints}
-                    onChange={(e) => setUpvotePoints(Number(e.target.value))}
                   />
                 </div>
 
@@ -717,18 +736,136 @@ function SettingsModal({
                     <Label htmlFor="settings-downvote-points">
                       Downvote Points per Round
                     </Label>
-                    <Input
-                      id="settings-downvote-points"
-                      type="number"
+                    <NumberStepper
+                      value={downvotePoints}
+                      onChange={setDownvotePoints}
                       min={1}
                       max={10}
-                      value={downvotePoints}
-                      onChange={(e) =>
-                        setDownvotePoints(Number(e.target.value))
-                      }
                     />
                   </div>
                 )}
+
+                {allowDownvotes && (
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Max Downvotes per Song</Label>
+                    <Select
+                      value={
+                        maxDownvotesPerSong === null
+                          ? "none"
+                          : String(maxDownvotesPerSong)
+                      }
+                      onValueChange={(v) =>
+                        setMaxDownvotesPerSong(
+                          v === "none" ? null : Number(v),
+                        )
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No limit</SelectItem>
+                        {Array.from({ length: 5 }, (_, i) => i + 1).map(
+                          (n) => (
+                            <SelectItem key={n} value={String(n)}>
+                              {n}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1.5">
+                  <Label>Max Upvotes per Song</Label>
+                  <Select
+                    value={
+                      maxUpvotesPerSong === null
+                        ? "none"
+                        : String(maxUpvotesPerSong)
+                    }
+                    onValueChange={(v) =>
+                      setMaxUpvotesPerSong(
+                        v === "none" ? null : Number(v),
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No limit</SelectItem>
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                        (n) => (
+                          <SelectItem key={n} value={String(n)}>
+                            {n}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="settings-voting-penalty">
+                      Voting Penalty
+                    </Label>
+                    <p className="text-muted-foreground text-xs">
+                      Non-voters only receive downvotes
+                    </p>
+                  </div>
+                  <Switch
+                    id="settings-voting-penalty"
+                    checked={votingPenalty}
+                    onCheckedChange={(v) => setVotingPenalty(v)}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label>Deadline Behavior</Label>
+                  <Select
+                    value={deadlineBehavior}
+                    onValueChange={(v) =>
+                      setDeadlineBehavior(
+                        v as "STEADY" | "ACCELERATED" | "SPEEDY",
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STEADY">
+                        Steady
+                      </SelectItem>
+                      <SelectItem value="ACCELERATED">
+                        Accelerated
+                      </SelectItem>
+                      <SelectItem value="SPEEDY">
+                        Speedy
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-muted-foreground text-xs">
+                    {deadlineBehavior === "STEADY"
+                      ? "Fixed deadlines, no early advancement"
+                      : deadlineBehavior === "ACCELERATED"
+                        ? "Auto-advance when all finish, next round on schedule"
+                        : "Auto-advance and start next round immediately"}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label>Max Members</Label>
+                  <NumberStepper
+                    value={maxMembers}
+                    onChange={setMaxMembers}
+                    min={2}
+                    max={50}
+                  />
+                </div>
 
                 {updateSettings.error && (
                   <p className="text-destructive text-sm">

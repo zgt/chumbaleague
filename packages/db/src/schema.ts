@@ -31,6 +31,12 @@ export const roundStatusEnum = pgEnum("round_status", [
   "COMPLETED",
 ]);
 
+export const deadlineBehaviorEnum = pgEnum("deadline_behavior", [
+  "STEADY",
+  "ACCELERATED",
+  "SPEEDY",
+]);
+
 export const reportStatusEnum = pgEnum("report_status", [
   "PENDING",
   "REVIEWED",
@@ -95,6 +101,12 @@ export const League = pgTable(
       .default(3)
       .notNull(),
     isPublic: t.boolean("is_public").default(false).notNull(),
+    deadlineBehavior: deadlineBehaviorEnum("deadline_behavior")
+      .default("STEADY")
+      .notNull(),
+    maxUpvotesPerSong: t.integer("max_upvotes_per_song"),
+    maxDownvotesPerSong: t.integer("max_downvotes_per_song"),
+    votingPenalty: t.boolean("voting_penalty").default(false).notNull(),
 
     // Relations
     creatorId: t
@@ -146,6 +158,7 @@ export const Round = pgTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     roundNumber: t.integer("round_number").notNull(),
+    sortOrder: t.integer("sort_order").default(0).notNull(),
     themeName: t.text("theme_name").notNull(),
     themeDescription: t.text("theme_description"),
     status: roundStatusEnum("status").default("SUBMISSION").notNull(),

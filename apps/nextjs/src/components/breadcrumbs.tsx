@@ -48,14 +48,6 @@ function useBreadcrumbs() {
     ];
   }
 
-  if (pathname === "/profile") {
-    return [{ label: "Leagues", href: "/" }, { label: "Profile", href: pathname }];
-  }
-
-  if (pathname === "/settings") {
-    return [{ label: "Leagues", href: "/" }, { label: "Settings", href: pathname }];
-  }
-
   if (params.leagueId) {
     crumbs.push({
       label: league?.name ?? "League",
@@ -92,8 +84,9 @@ export function Breadcrumbs() {
   const pathname = usePathname();
   const breadcrumbs = useBreadcrumbs();
 
-  // Don't show breadcrumbs on the home/dashboard
-  if (pathname === "/") return null;
+  // Don't show breadcrumbs on home, profile, or settings
+  if (pathname === "/" || pathname === "/profile" || pathname === "/settings")
+    return null;
 
   return (
     <div className="border-border/40 mb-4 border-b border-dashed pb-3">

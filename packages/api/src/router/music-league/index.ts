@@ -2,7 +2,7 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
-import { and, eq, inArray, sql } from "@acme/db";
+import { and, eq, inArray, ne, sql } from "@acme/db";
 import {
   Comment,
   League,
@@ -22,6 +22,113 @@ import { protectedProcedure, publicProcedure } from "../../trpc";
 // Helper for invite codes
 function generateInviteCode(): string {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
+}
+
+// Helper: add days to date
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function checkAutoAdvance(
+  db: any,
+  roundId: string,
+) {
+  const round = await db.query.Round.findFirst({
+    where: eq(Round.id, roundId),
+    with: {
+      league: {
+        with: { members: true },
+      },
+      submissions: {
+        with: { votes: true },
+      },
+    },
+  });
+
+  if (!round) return;
+
+  const { league } = round;
+  if (league.deadlineBehavior === "STEADY") return;
+
+  const memberCount = league.members.length;
+
+  if (round.status === "SUBMISSION") {
+    // Check if all members have submitted songsPerRound songs
+    const submitterIds = new Set<string>();
+    const submissionsByUser = new Map<string, number>();
+    for (const sub of round.submissions) {
+      submissionsByUser.set(sub.userId, (submissionsByUser.get(sub.userId) ?? 0) + 1);
+    }
+    for (const [userId, count] of submissionsByUser) {
+      if (count >= league.songsPerRound) submitterIds.add(userId);
+    }
+    if (submitterIds.size < memberCount) return;
+
+    // All members submitted — advance to LISTENING
+    await db
+      .update(Round)
+      .set({ status: "LISTENING" })
+      .where(eq(Round.id, roundId));
+  } else if (round.status === "VOTING") {
+    // Check if all members have voted
+    const voterIds = new Set<string>();
+    for (const sub of round.submissions) {
+      for (const vote of sub.votes) {
+        voterIds.add(vote.voterId);
+      }
+    }
+    // Exclude users who submitted (they can't vote on own) — actually they can vote on others
+    // Just check if all members have at least one vote
+    if (voterIds.size < memberCount) return;
+
+    // All members voted — advance to RESULTS
+    await db
+      .update(Round)
+      .set({ status: "RESULTS" })
+      .where(eq(Round.id, roundId));
+
+    void notifyResultsAvailable(roundId);
+    void pushNotifyResultsAvailable(roundId);
+
+    // If SPEEDY, auto-complete and start next round
+    if (league.deadlineBehavior === "SPEEDY") {
+      await db
+        .update(Round)
+        .set({ status: "COMPLETED" })
+        .where(eq(Round.id, roundId));
+
+      // Activate next pending round
+      const pendingRound = await db.query.Round.findFirst({
+        where: and(
+          eq(Round.leagueId, league.id),
+          eq(Round.status, "PENDING"),
+        ),
+        orderBy: (r: any, { asc }: any) => [asc(r.sortOrder)],
+      });
+
+      if (pendingRound) {
+        const now = new Date();
+        await db
+          .update(Round)
+          .set({
+            status: "SUBMISSION",
+            startDate: now,
+            submissionDeadline: addDays(now, league.submissionWindowDays),
+            votingDeadline: addDays(
+              addDays(now, league.submissionWindowDays),
+              league.votingWindowDays,
+            ),
+          })
+          .where(eq(Round.id, pendingRound.id));
+
+        void notifyRoundStarted(pendingRound.id);
+        void pushNotifyRoundStarted(pendingRound.id);
+      }
+    }
+  }
 }
 
 export const musicLeagueRouter = {
@@ -162,6 +269,14 @@ export const musicLeagueRouter = {
         submissionWindowDays: z.number().int().min(1).max(14).default(3),
         votingWindowDays: z.number().int().min(1).max(14).default(2),
         downvotePointsPerRound: z.number().int().min(1).max(10).default(3),
+        deadlineBehavior: z.enum(["STEADY", "ACCELERATED", "SPEEDY"]).default("STEADY"),
+        maxUpvotesPerSong: z.number().int().min(1).max(25).nullish(),
+        maxDownvotesPerSong: z.number().int().min(1).max(10).nullish(),
+        votingPenalty: z.boolean().default(false),
+        rounds: z.array(z.object({
+          themeName: z.string().min(1).max(200),
+          themeDescription: z.string().max(500).optional(),
+        })).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -179,6 +294,10 @@ export const musicLeagueRouter = {
           submissionWindowDays: input.submissionWindowDays,
           votingWindowDays: input.votingWindowDays,
           downvotePointsPerRound: input.downvotePointsPerRound,
+          deadlineBehavior: input.deadlineBehavior,
+          maxUpvotesPerSong: input.maxUpvotesPerSong ?? null,
+          maxDownvotesPerSong: input.maxDownvotesPerSong ?? null,
+          votingPenalty: input.votingPenalty,
           inviteCode: generateInviteCode(),
           creatorId: ctx.session.user.id,
           status: "ACTIVE",
@@ -189,6 +308,35 @@ export const musicLeagueRouter = {
           userId: ctx.session.user.id,
           role: "OWNER",
         });
+
+        // Create inline rounds as PENDING
+        if (input.rounds && input.rounds.length > 0) {
+          const now = new Date();
+          const addDays = (date: Date, days: number): Date => {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+          };
+
+          for (let i = 0; i < input.rounds.length; i++) {
+            const round = input.rounds[i]!;
+            const startDate = now;
+            const submissionDeadline = addDays(startDate, input.submissionWindowDays);
+            const votingDeadline = addDays(submissionDeadline, input.votingWindowDays);
+
+            await tx.insert(Round).values({
+              leagueId: leagueId,
+              roundNumber: i + 1,
+              sortOrder: i,
+              themeName: round.themeName,
+              themeDescription: round.themeDescription,
+              startDate,
+              submissionDeadline,
+              votingDeadline,
+              status: "PENDING",
+            });
+          }
+        }
       });
 
       void flagContentIfNeeded("LEAGUE", leagueId, [input.name, input.description].filter(Boolean).join(" "));
@@ -324,6 +472,7 @@ export const musicLeagueRouter = {
         leagueId: z.string(),
         themeName: z.string().min(1).max(200),
         themeDescription: z.string().max(500).optional(),
+        sortOrder: z.number().int().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -398,6 +547,7 @@ export const musicLeagueRouter = {
         .values({
           leagueId: input.leagueId,
           roundNumber,
+          sortOrder: input.sortOrder ?? roundNumber - 1,
           themeName: input.themeName,
           themeDescription: input.themeDescription,
           startDate,
@@ -519,6 +669,9 @@ export const musicLeagueRouter = {
         downvotePointValue: round.league.downvotePointValue,
         downvotePointsPerRound: round.league.downvotePointsPerRound,
         songsPerRound: round.league.songsPerRound,
+        maxUpvotesPerSong: round.league.maxUpvotesPerSong,
+        maxDownvotesPerSong: round.league.maxDownvotesPerSong,
+        deadlineBehavior: round.league.deadlineBehavior,
         memberCount: round.league.members.length,
         submissionCount: round.submissions.length,
       };
@@ -575,10 +728,15 @@ export const musicLeagueRouter = {
         });
       }
 
-      return ctx.db.insert(Submission).values({
+      const submission = await ctx.db.insert(Submission).values({
         ...input,
         userId: ctx.session.user.id,
       });
+
+      // Fire-and-forget auto-advance check
+      void checkAutoAdvance(ctx.db, input.roundId);
+
+      return submission;
     }),
 
   deleteSubmission: protectedProcedure
@@ -665,6 +823,31 @@ export const musicLeagueRouter = {
         });
       }
 
+      // Per-song vote limits
+      if (round.league.maxUpvotesPerSong != null) {
+        const overLimit = input.votes.find(
+          (v) => v.points > 0 && v.points > round.league.maxUpvotesPerSong!,
+        );
+        if (overLimit) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Upvotes per song (${overLimit.points}) exceed the limit of ${round.league.maxUpvotesPerSong}`,
+          });
+        }
+      }
+
+      if (round.league.maxDownvotesPerSong != null) {
+        const overLimit = input.votes.find(
+          (v) => v.points < 0 && Math.abs(v.points) > round.league.maxDownvotesPerSong!,
+        );
+        if (overLimit) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Downvotes per song (${Math.abs(overLimit.points)}) exceed the limit of ${round.league.maxDownvotesPerSong}`,
+          });
+        }
+      }
+
       await ctx.db.transaction(async (tx) => {
         // Delete existing votes for this round by this user
         await tx
@@ -715,6 +898,9 @@ export const musicLeagueRouter = {
           );
         }
       });
+
+      // Fire-and-forget auto-advance check
+      void checkAutoAdvance(ctx.db, input.roundId);
 
       return { success: true };
     }),
@@ -812,6 +998,11 @@ export const musicLeagueRouter = {
         submissionWindowDays: z.number().int().min(1).max(14).optional(),
         votingWindowDays: z.number().int().min(1).max(14).optional(),
         downvotePointsPerRound: z.number().int().min(1).max(10).optional(),
+        deadlineBehavior: z.enum(["STEADY", "ACCELERATED", "SPEEDY"]).optional(),
+        maxUpvotesPerSong: z.number().int().min(1).max(25).nullish(),
+        maxDownvotesPerSong: z.number().int().min(1).max(10).nullish(),
+        votingPenalty: z.boolean().optional(),
+        maxMembers: z.number().int().min(2).max(50).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -848,6 +1039,16 @@ export const musicLeagueRouter = {
         setValues.votingWindowDays = updates.votingWindowDays;
       if (updates.downvotePointsPerRound !== undefined)
         setValues.downvotePointsPerRound = updates.downvotePointsPerRound;
+      if (updates.deadlineBehavior !== undefined)
+        setValues.deadlineBehavior = updates.deadlineBehavior;
+      if (updates.maxUpvotesPerSong !== undefined)
+        setValues.maxUpvotesPerSong = updates.maxUpvotesPerSong ?? null;
+      if (updates.maxDownvotesPerSong !== undefined)
+        setValues.maxDownvotesPerSong = updates.maxDownvotesPerSong ?? null;
+      if (updates.votingPenalty !== undefined)
+        setValues.votingPenalty = updates.votingPenalty;
+      if (updates.maxMembers !== undefined)
+        setValues.maxMembers = updates.maxMembers;
 
       if (Object.keys(setValues).length === 0) {
         throw new TRPCError({
@@ -860,6 +1061,64 @@ export const musicLeagueRouter = {
 
       const textToCheck = [updates.name, updates.description].filter(Boolean).join(" ");
       if (textToCheck) void flagContentIfNeeded("LEAGUE", leagueId, textToCheck);
+
+      return { success: true };
+    }),
+
+  // --- ROUND REORDER ---
+
+  reorderRounds: protectedProcedure
+    .input(
+      z.object({
+        leagueId: z.string(),
+        rounds: z.array(z.object({
+          roundId: z.string(),
+          sortOrder: z.number().int(),
+        })),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const member = await ctx.db.query.LeagueMember.findFirst({
+        where: and(
+          eq(LeagueMember.leagueId, input.leagueId),
+          eq(LeagueMember.userId, ctx.session.user.id),
+        ),
+      });
+
+      if (!member || (member.role !== "OWNER" && member.role !== "ADMIN")) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only owners and admins can reorder rounds",
+        });
+      }
+
+      // Verify all rounds belong to this league and are reorderable
+      const roundIds = input.rounds.map((r) => r.roundId);
+      const existingRounds = await ctx.db.query.Round.findMany({
+        where: and(
+          eq(Round.leagueId, input.leagueId),
+          inArray(Round.id, roundIds),
+        ),
+      });
+
+      const nonReorderable = existingRounds.filter(
+        (r) => r.status !== "PENDING" && r.status !== "SUBMISSION",
+      );
+      if (nonReorderable.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Can only reorder PENDING or SUBMISSION rounds",
+        });
+      }
+
+      await ctx.db.transaction(async (tx) => {
+        for (const { roundId, sortOrder } of input.rounds) {
+          await tx
+            .update(Round)
+            .set({ sortOrder })
+            .where(eq(Round.id, roundId));
+        }
+      });
 
       return { success: true };
     }),
