@@ -11,6 +11,7 @@ import {
   LogOut,
   MoreVertical,
   Music2,
+  Play,
   Plus,
   Settings,
   ShieldAlert,
@@ -150,6 +151,16 @@ export default function LeagueDetailPage() {
       onSuccess: () => {
         void queryClient.invalidateQueries(
           trpc.moderation.getBlockedUserIds.queryFilter(),
+        );
+      },
+    }),
+  );
+
+  const startLeague = useMutation(
+    trpc.musicLeague.startLeague.mutationOptions({
+      onSuccess: () => {
+        void queryClient.invalidateQueries(
+          trpc.musicLeague.getLeagueById.queryFilter({ id: params.leagueId }),
         );
       },
     }),
@@ -306,6 +317,39 @@ export default function LeagueDetailPage() {
             {/* Standings */}
             <LeagueStandings leagueId={league.id} />
 
+            {/* Start League Banner */}
+            {isOwner &&
+              league.rounds.length > 0 &&
+              league.rounds.every((r) => r.status === "PENDING") && (
+                <Card className="border-emerald-500/30 bg-emerald-500/5">
+                  <CardContent className="flex items-center justify-between py-4">
+                    <div>
+                      <p className="font-medium">Ready to start?</p>
+                      <p className="text-muted-foreground text-sm">
+                        {league.rounds.length} round
+                        {league.rounds.length !== 1 ? "s" : ""} queued &middot;{" "}
+                        {league.members.length} member
+                        {league.members.length !== 1 ? "s" : ""} joined
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() =>
+                        startLeague.mutate({ leagueId: league.id })
+                      }
+                      disabled={startLeague.isPending}
+                    >
+                      {startLeague.isPending
+                        ? "Starting..." : (
+                        <>
+                          <Play className="h-4 w-4" />
+                          Start League
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
             {/* Rounds */}
             <Card>
               <CardHeader>
@@ -323,48 +367,90 @@ export default function LeagueDetailPage() {
               </CardHeader>
               <CardContent>
                 {league.rounds.length > 0 ? (
-                  <div className="space-y-3">
-                    {league.rounds.map((round) => {
-                      const isPending = round.status === "PENDING";
-                      const isScored =
-                        round.status === "RESULTS" ||
-                        round.status === "COMPLETED";
-                      const winner = isScored
-                        ? getRoundWinner(round.submissions)
-                        : null;
+                  <div className="space-y-2">
+                    {(() => {
+                      const activeStatuses = ["SUBMISSION", "LISTENING", "VOTING", "RESULTS"];
+                      const activeRound = league.rounds.find((r) =>
+                        activeStatuses.includes(r.status),
+                      );
+                      const pendingRounds = league.rounds
+                        .filter((r) => r.status === "PENDING")
+                        .sort((a, b) => a.sortOrder - b.sortOrder);
+                      const currentRound = activeRound ?? pendingRounds[0];
+                      const upcomingRounds = activeRound
+                        ? pendingRounds
+                        : pendingRounds.slice(1);
+                      const completedRounds = league.rounds
+                        .filter((r) => r.status === "COMPLETED")
+                        .sort((a, b) => b.roundNumber - a.roundNumber);
 
                       return (
-                        <Link
-                          key={round.id}
-                          href={`/leagues/${league.id}/rounds/${round.id}`}
-                          className={`border-border/50 hover:bg-muted flex items-center justify-between rounded-lg border p-3 transition-colors ${
-                            isPending ? "opacity-50" : ""
-                          }`}
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p
-                              className={`font-medium ${isPending ? "text-muted-foreground" : ""}`}
+                        <>
+                          {/* Current / active round */}
+                          {currentRound && (
+                            <Link
+                              href={`/leagues/${league.id}/rounds/${currentRound.id}`}
+                              className="border-border/50 hover:bg-muted flex items-center justify-between rounded-lg border border-l-2 border-l-emerald-500 p-3 transition-colors"
                             >
-                              Round {round.roundNumber}: {round.themeName}
-                            </p>
-                            {winner && (
-                              <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
-                                <Trophy className="h-3 w-3 text-yellow-500" />
-                                {winner.userName} &middot; {winner.trackName}
-                              </p>
-                            )}
-                            {!winner && round.themeDescription && (
-                              <p className="text-muted-foreground mt-0.5 text-sm">
-                                {round.themeDescription}
-                              </p>
-                            )}
-                          </div>
-                          <Badge variant={isPending ? "outline" : "secondary"}>
-                            {isPending ? "Pending" : round.status}
-                          </Badge>
-                        </Link>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium">
+                                  Round {currentRound.roundNumber}: {currentRound.themeName}
+                                </p>
+                                {currentRound.themeDescription && (
+                                  <p className="text-muted-foreground mt-0.5 text-sm">
+                                    {currentRound.themeDescription}
+                                  </p>
+                                )}
+                              </div>
+                              <Badge variant="secondary">
+                                {currentRound.status === "PENDING" ? "Up Next" : currentRound.status}
+                              </Badge>
+                            </Link>
+                          )}
+
+                          {/* Upcoming pending rounds */}
+                          {upcomingRounds.map((round) => (
+                            <Link
+                              key={round.id}
+                              href={`/leagues/${league.id}/rounds/${round.id}`}
+                              className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 opacity-60 transition-colors"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <p className="text-muted-foreground font-medium">
+                                  Round {round.roundNumber}: {round.themeName}
+                                </p>
+                              </div>
+                              <Badge variant="outline">Pending</Badge>
+                            </Link>
+                          ))}
+
+                          {/* Completed rounds */}
+                          {completedRounds.map((round) => {
+                            const winner = getRoundWinner(round.submissions);
+                            return (
+                              <Link
+                                key={round.id}
+                                href={`/leagues/${league.id}/rounds/${round.id}`}
+                                className="border-border/50 hover:bg-muted flex items-center justify-between rounded-lg border p-3 transition-colors"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium">
+                                    Round {round.roundNumber}: {round.themeName}
+                                  </p>
+                                  {winner && (
+                                    <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
+                                      <Trophy className="h-3 w-3 text-yellow-500" />
+                                      {winner.userName} &middot; {winner.trackName}
+                                    </p>
+                                  )}
+                                </div>
+                                <Badge variant="secondary">Completed</Badge>
+                              </Link>
+                            );
+                          })}
+                        </>
                       );
-                    })}
+                    })()}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3 py-6 text-center">

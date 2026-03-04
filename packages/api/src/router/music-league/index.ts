@@ -309,30 +309,19 @@ export const musicLeagueRouter = {
           role: "OWNER",
         });
 
-        // Create inline rounds as PENDING
+        // Create inline rounds — all start as PENDING until owner starts the league
         if (input.rounds && input.rounds.length > 0) {
-          const now = new Date();
-          const addDays = (date: Date, days: number): Date => {
-            const result = new Date(date);
-            result.setDate(result.getDate() + days);
-            return result;
-          };
-
           for (let i = 0; i < input.rounds.length; i++) {
             const round = input.rounds[i]!;
-            const startDate = now;
-            const submissionDeadline = addDays(startDate, input.submissionWindowDays);
-            const votingDeadline = addDays(submissionDeadline, input.votingWindowDays);
-
             await tx.insert(Round).values({
               leagueId: leagueId,
               roundNumber: i + 1,
               sortOrder: i,
               themeName: round.themeName,
               themeDescription: round.themeDescription,
-              startDate,
-              submissionDeadline,
-              votingDeadline,
+              startDate: new Date(),
+              submissionDeadline: new Date(),
+              votingDeadline: new Date(),
               status: "PENDING",
             });
           }
@@ -342,6 +331,89 @@ export const musicLeagueRouter = {
       void flagContentIfNeeded("LEAGUE", leagueId, [input.name, input.description].filter(Boolean).join(" "));
 
       return { id: leagueId };
+    }),
+
+  startLeague: protectedProcedure
+    .input(z.object({ leagueId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const member = await ctx.db.query.LeagueMember.findFirst({
+        where: and(
+          eq(LeagueMember.leagueId, input.leagueId),
+          eq(LeagueMember.userId, ctx.session.user.id),
+        ),
+      });
+
+      if (!member || member.role !== "OWNER") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the owner can start the league",
+        });
+      }
+
+      const league = await ctx.db.query.League.findFirst({
+        where: eq(League.id, input.leagueId),
+      });
+
+      if (!league) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "League not found" });
+      }
+
+      // Find the first PENDING round by sort order
+      const firstRound = await ctx.db.query.Round.findFirst({
+        where: and(
+          eq(Round.leagueId, input.leagueId),
+          eq(Round.status, "PENDING"),
+        ),
+        orderBy: (round, { asc }) => [asc(round.sortOrder), asc(round.roundNumber)],
+      });
+
+      if (!firstRound) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No pending rounds to start. Create a round first.",
+        });
+      }
+
+      // Check no round is already active
+      const activeRound = await ctx.db.query.Round.findFirst({
+        where: and(
+          eq(Round.leagueId, input.leagueId),
+          ne(Round.status, "PENDING"),
+          ne(Round.status, "COMPLETED"),
+        ),
+      });
+
+      if (activeRound) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "A round is already in progress",
+        });
+      }
+
+      const addDays = (date: Date, days: number): Date => {
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+      };
+
+      const now = new Date();
+      const submissionDeadline = addDays(now, league.submissionWindowDays);
+      const votingDeadline = addDays(submissionDeadline, league.votingWindowDays);
+
+      await ctx.db
+        .update(Round)
+        .set({
+          status: "SUBMISSION",
+          startDate: now,
+          submissionDeadline,
+          votingDeadline,
+        })
+        .where(eq(Round.id, firstRound.id));
+
+      void notifyRoundStarted(firstRound.id);
+      void pushNotifyRoundStarted(firstRound.id);
+
+      return { roundId: firstRound.id };
     }),
 
   getAllLeagues: protectedProcedure.query(async ({ ctx }) => {
@@ -379,7 +451,7 @@ export const musicLeagueRouter = {
             orderBy: (member, { asc }) => [asc(member.joinedAt)],
           },
           rounds: {
-            orderBy: (round, { desc }) => [desc(round.roundNumber)],
+            orderBy: (round, { asc }) => [asc(round.sortOrder), asc(round.roundNumber)],
             with: {
               submissions: {
                 with: {
@@ -501,12 +573,17 @@ export const musicLeagueRouter = {
         });
       }
 
-      const lastRound = await ctx.db.query.Round.findFirst({
+      const existingRounds = await ctx.db.query.Round.findMany({
         where: eq(Round.leagueId, input.leagueId),
-        orderBy: (round, { desc }) => [desc(round.roundNumber)],
       });
 
-      const roundNumber = (lastRound?.roundNumber ?? 0) + 1;
+      const sortOrder = existingRounds.length;
+      const roundNumber = sortOrder + 1;
+
+      const lastRound = existingRounds.length > 0
+        ? existingRounds.reduce((latest, r) =>
+            (r.roundNumber > latest.roundNumber ? r : latest))
+        : null;
 
       const addDays = (date: Date, days: number): Date => {
         const result = new Date(date);
@@ -527,15 +604,7 @@ export const musicLeagueRouter = {
         status = "SUBMISSION";
       } else {
         // Previous round is NOT completed → queue as PENDING
-        // Reject if there is already a PENDING round
-        if (lastRound.status === "PENDING") {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "There is already a pending round. Only one pending round is allowed at a time.",
-          });
-        }
-
+        // Chain dates from the last round's voting deadline
         startDate = lastRound.votingDeadline;
         submissionDeadline = addDays(startDate, league.submissionWindowDays);
         votingDeadline = addDays(submissionDeadline, league.votingWindowDays);
@@ -547,7 +616,7 @@ export const musicLeagueRouter = {
         .values({
           leagueId: input.leagueId,
           roundNumber,
-          sortOrder: input.sortOrder ?? roundNumber - 1,
+          sortOrder,
           themeName: input.themeName,
           themeDescription: input.themeDescription,
           startDate,
@@ -1102,12 +1171,12 @@ export const musicLeagueRouter = {
       });
 
       const nonReorderable = existingRounds.filter(
-        (r) => r.status !== "PENDING" && r.status !== "SUBMISSION",
+        (r) => r.status !== "PENDING",
       );
       if (nonReorderable.length > 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Can only reorder PENDING or SUBMISSION rounds",
+          message: "Can only reorder PENDING rounds",
         });
       }
 
@@ -1115,7 +1184,7 @@ export const musicLeagueRouter = {
         for (const { roundId, sortOrder } of input.rounds) {
           await tx
             .update(Round)
-            .set({ sortOrder })
+            .set({ sortOrder, roundNumber: sortOrder + 1 })
             .where(eq(Round.id, roundId));
         }
       });
