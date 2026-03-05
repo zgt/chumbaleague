@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,6 +15,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   LogOut,
+  Play,
   Plus,
   RefreshCw,
   Settings,
@@ -29,12 +30,51 @@ import { LeagueStandingsTable } from "~/components/music/LeagueStandingsTable";
 import { trpc } from "~/utils/api";
 import { authClient } from "~/utils/auth";
 
+interface VoteItem {
+  points: number;
+}
+
+interface SubmissionItem {
+  id: string;
+  trackName: string;
+  artistName: string;
+  userId: string;
+  user: { name: string | null };
+  votes: VoteItem[];
+}
+
 interface RoundItem {
   id: string;
   roundNumber: number;
   themeName: string;
   themeDescription: string | null;
   status: string;
+  submissions: SubmissionItem[];
+}
+
+function getRoundWinner(round: RoundItem) {
+  if (round.status !== "COMPLETED" && round.status !== "RESULTS") return null;
+  if (round.submissions.length === 0) return null;
+
+  let bestSubmission: SubmissionItem | null = null;
+  let bestScore = -Infinity;
+
+  for (const sub of round.submissions) {
+    const score = sub.votes.reduce((sum, v) => sum + v.points, 0);
+    if (score > bestScore) {
+      bestScore = score;
+      bestSubmission = sub;
+    }
+  }
+
+  return bestSubmission
+    ? {
+        userName: bestSubmission.user.name ?? "Unknown",
+        trackName: bestSubmission.trackName,
+        artistName: bestSubmission.artistName,
+        score: bestScore,
+      }
+    : null;
 }
 
 export default function LeagueDetails() {
@@ -112,6 +152,19 @@ export default function LeagueDetails() {
     }),
   );
 
+  const startLeagueMutation = useMutation(
+    trpc.musicLeague.startLeague.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(
+          trpc.musicLeague.getLeagueById.queryFilter(),
+        );
+      },
+      onError: (error) => {
+        Alert.alert("Failed to start league", error.message);
+      },
+    }),
+  );
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     triggerRipple();
@@ -127,6 +180,15 @@ export default function LeagueDetails() {
   );
   const isOwner = currentMember?.role === "OWNER";
   const isAdmin = currentMember?.role === "ADMIN" || isOwner;
+
+  const allRoundsPending = useMemo(() => {
+    if (!league?.rounds.length) return false;
+    return league.rounds.every(
+      (r: { status: string }) => r.status === "PENDING",
+    );
+  }, [league?.rounds]);
+
+  const showStartBanner = isOwner && (league?.rounds.length ?? 0) > 0 && allRoundsPending;
 
   const handleShareInvite = async () => {
     if (!league) return;
@@ -184,6 +246,20 @@ export default function LeagueDetails() {
     );
   };
 
+  const handleStartLeague = () => {
+    Alert.alert(
+      "Start League",
+      "This will begin the first round and open submissions. Are you ready?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Start",
+          onPress: () => startLeagueMutation.mutate({ leagueId: id }),
+        },
+      ],
+    );
+  };
+
   const getStatusColors = (status: string) => {
     switch (status) {
       case "PENDING":
@@ -194,6 +270,8 @@ export default function LeagueDetails() {
         return { bg: "rgba(234, 179, 8, 0.2)", text: "#EAB308" };
       case "RESULTS":
         return { bg: "rgba(100, 149, 237, 0.2)", text: "#6495ED" };
+      case "COMPLETED":
+        return { bg: "rgba(34, 197, 94, 0.15)", text: "#22C55E" };
       default:
         return { bg: "rgba(155, 138, 184, 0.15)", text: "#9B8AB8" };
     }
@@ -203,6 +281,7 @@ export default function LeagueDetails() {
     ({ item }: { item: RoundItem }) => {
       const isPending = item.status === "PENDING";
       const statusColors = getStatusColors(item.status);
+      const winner = getRoundWinner(item);
 
       return (
         <Pressable
@@ -262,6 +341,29 @@ export default function LeagueDetails() {
                 >
                   {item.themeDescription}
                 </Text>
+              )}
+              {winner && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 8,
+                    gap: 6,
+                  }}
+                >
+                  <Trophy size={14} color="#EAB308" />
+                  <Text
+                    style={{ fontSize: 13, color: "#EAB308", fontWeight: "600" }}
+                  >
+                    {winner.userName}
+                  </Text>
+                  <Text
+                    style={{ fontSize: 13, color: "#9B8AB8" }}
+                    numberOfLines={1}
+                  >
+                    — {winner.trackName}
+                  </Text>
+                </View>
               )}
             </View>
             <View
@@ -359,6 +461,44 @@ export default function LeagueDetails() {
           }
           ListHeaderComponent={
             <View>
+              {/* Start League Banner */}
+              {showStartBanner && (
+                <Pressable
+                  onPress={handleStartLeague}
+                  disabled={startLeagueMutation.isPending}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: "rgba(34, 197, 94, 0.4)",
+                    backgroundColor: "rgba(34, 197, 94, 0.15)",
+                    paddingVertical: 14,
+                    marginBottom: 16,
+                    opacity: startLeagueMutation.isPending ? 0.6 : 1,
+                  }}
+                >
+                  {startLeagueMutation.isPending ? (
+                    <ActivityIndicator color="#22C55E" />
+                  ) : (
+                    <>
+                      <Play size={20} color="#22C55E" />
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "700",
+                          color: "#22C55E",
+                        }}
+                      >
+                        Start League
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              )}
+
               {/* Invite Code Card */}
               <View className="mb-4 rounded-2xl border border-[#c03484]/20 bg-[#1A0E2E] p-4">
                 <View className="flex-row items-center justify-between">
@@ -410,10 +550,7 @@ export default function LeagueDetails() {
               {isAdmin && (
                 <Pressable
                   onPress={() =>
-                    Alert.alert(
-                      "Coming soon",
-                      "Round creation will be available in the next update.",
-                    )
+                    router.push(`/round/create?leagueId=${id}` as never)
                   }
                   className="mb-4 flex-row items-center justify-center gap-2 rounded-2xl bg-[#c03484] py-3 active:bg-[#d04494]"
                   accessibilityLabel="Create round"
@@ -557,12 +694,17 @@ export default function LeagueDetails() {
             leagueId={id}
             name={league.name}
             description={league.description}
+            maxMembers={league.maxMembers}
             songsPerRound={league.songsPerRound}
             upvotePointsPerRound={league.upvotePointsPerRound}
             allowDownvotes={league.allowDownvotes}
             downvotePointsPerRound={league.downvotePointsPerRound}
             submissionWindowDays={league.submissionWindowDays}
             votingWindowDays={league.votingWindowDays}
+            deadlineBehavior={league.deadlineBehavior}
+            maxUpvotesPerSong={league.maxUpvotesPerSong}
+            maxDownvotesPerSong={league.maxDownvotesPerSong}
+            votingPenalty={league.votingPenalty}
             isOwner={isOwner}
             onDeleteLeague={handleDeleteLeague}
           />

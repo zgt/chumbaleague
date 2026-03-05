@@ -41,11 +41,16 @@ interface LeagueSettings {
   name: string;
   description: string | null;
   songsPerRound: number;
+  maxMembers: number;
   upvotePointsPerRound: number;
   allowDownvotes: boolean;
   downvotePointsPerRound: number;
   submissionWindowDays: number;
   votingWindowDays: number;
+  deadlineBehavior: "STEADY" | "ACCELERATED" | "SPEEDY";
+  maxUpvotesPerSong: number | null;
+  maxDownvotesPerSong: number | null;
+  votingPenalty: boolean;
   isOwner?: boolean;
   onDeleteLeague?: () => void;
 }
@@ -91,6 +96,70 @@ function SettingsStepper({
   );
 }
 
+function NullableStepper({
+  value,
+  onChange,
+  min,
+  max,
+  label,
+  nullLabel = "No limit",
+}: {
+  value: number | null;
+  onChange: (v: number | null) => void;
+  min: number;
+  max: number;
+  label: string;
+  nullLabel?: string;
+}) {
+  const isLimited = value !== null;
+  return (
+    <View className="rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
+      <View className="flex-row items-center justify-between">
+        <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+        <Pressable
+          onPress={() => onChange(isLimited ? null : min)}
+          className={`rounded-full px-3 py-1 ${
+            isLimited
+              ? "border border-[#c03484] bg-[#c03484]/20"
+              : "border border-[#3D1F5C] bg-[#3D1F5C]"
+          }`}
+        >
+          <Text
+            className={`text-xs font-medium ${
+              isLimited ? "text-[#c03484]" : "text-[#9B8AB8]"
+            }`}
+          >
+            {isLimited ? "Limited" : nullLabel}
+          </Text>
+        </Pressable>
+      </View>
+      {isLimited && (
+        <View className="mt-3 flex-row items-center justify-end gap-3">
+          <Pressable
+            onPress={() => onChange(Math.max(min, value - 1))}
+            disabled={value <= min}
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            style={value <= min ? { opacity: 0.4 } : undefined}
+          >
+            <ChevronDown size={20} color="#E8E0F0" />
+          </Pressable>
+          <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+            {value}
+          </Text>
+          <Pressable
+            onPress={() => onChange(Math.min(max, value + 1))}
+            disabled={value >= max}
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            style={value >= max ? { opacity: 0.4 } : undefined}
+          >
+            <ChevronUp size={20} color="#E8E0F0" />
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+}
+
 const SUBMISSION_WINDOW_PRESETS = [
   { label: "1 day", days: 1 },
   { label: "2 days", days: 2 },
@@ -104,6 +173,16 @@ const VOTING_WINDOW_PRESETS = [
   { label: "2 days", days: 2 },
   { label: "3 days", days: 3 },
   { label: "5 days", days: 5 },
+];
+
+const DEADLINE_BEHAVIORS = [
+  { label: "Steady", value: "STEADY" as const, desc: "Fixed deadlines" },
+  {
+    label: "Accelerated",
+    value: "ACCELERATED" as const,
+    desc: "Earlier if all submit",
+  },
+  { label: "Speedy", value: "SPEEDY" as const, desc: "Fast transitions" },
 ];
 
 function DeleteConfirmModal({
@@ -211,11 +290,16 @@ export const LeagueSettingsSheet = forwardRef<
       name,
       description,
       songsPerRound,
+      maxMembers,
       upvotePointsPerRound,
       allowDownvotes,
       downvotePointsPerRound,
       submissionWindowDays,
       votingWindowDays,
+      deadlineBehavior,
+      maxUpvotesPerSong,
+      maxDownvotesPerSong,
+      votingPenalty,
       isOwner,
       onDeleteLeague,
     },
@@ -226,6 +310,7 @@ export const LeagueSettingsSheet = forwardRef<
 
     const [editName, setEditName] = useState(name);
     const [editDescription, setEditDescription] = useState(description ?? "");
+    const [editMaxMembers, setEditMaxMembers] = useState(maxMembers);
     const [editSongsPerRound, setEditSongsPerRound] = useState(songsPerRound);
     const [editUpvotePoints, setEditUpvotePoints] =
       useState(upvotePointsPerRound);
@@ -238,6 +323,13 @@ export const LeagueSettingsSheet = forwardRef<
       useState(submissionWindowDays);
     const [editVotingWindowDays, setEditVotingWindowDays] =
       useState(votingWindowDays);
+    const [editDeadlineBehavior, setEditDeadlineBehavior] =
+      useState(deadlineBehavior);
+    const [editMaxUpvotesPerSong, setEditMaxUpvotesPerSong] =
+      useState(maxUpvotesPerSong);
+    const [editMaxDownvotesPerSong, setEditMaxDownvotesPerSong] =
+      useState(maxDownvotesPerSong);
+    const [editVotingPenalty, setEditVotingPenalty] = useState(votingPenalty);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -250,21 +342,31 @@ export const LeagueSettingsSheet = forwardRef<
     const resetToProps = useCallback(() => {
       setEditName(name);
       setEditDescription(description ?? "");
+      setEditMaxMembers(maxMembers);
       setEditSongsPerRound(songsPerRound);
       setEditUpvotePoints(upvotePointsPerRound);
       setEditAllowDownvotes(allowDownvotes);
       setEditDownvotePoints(downvotePointsPerRound);
       setEditSubmissionWindowDays(submissionWindowDays);
       setEditVotingWindowDays(votingWindowDays);
+      setEditDeadlineBehavior(deadlineBehavior);
+      setEditMaxUpvotesPerSong(maxUpvotesPerSong);
+      setEditMaxDownvotesPerSong(maxDownvotesPerSong);
+      setEditVotingPenalty(votingPenalty);
     }, [
       name,
       description,
+      maxMembers,
       songsPerRound,
       upvotePointsPerRound,
       allowDownvotes,
       downvotePointsPerRound,
       submissionWindowDays,
       votingWindowDays,
+      deadlineBehavior,
+      maxUpvotesPerSong,
+      maxDownvotesPerSong,
+      votingPenalty,
     ]);
 
     useImperativeHandle(ref, () => ({
@@ -285,12 +387,17 @@ export const LeagueSettingsSheet = forwardRef<
           leagueId,
           name: editName.trim(),
           description: editDescription.trim() || undefined,
+          maxMembers: editMaxMembers,
           songsPerRound: editSongsPerRound,
           upvotePointsPerRound: editUpvotePoints,
           allowDownvotes: editAllowDownvotes,
           downvotePointsPerRound: editDownvotePoints,
           submissionWindowDays: editSubmissionWindowDays,
           votingWindowDays: editVotingWindowDays,
+          deadlineBehavior: editDeadlineBehavior,
+          maxUpvotesPerSong: editMaxUpvotesPerSong,
+          maxDownvotesPerSong: editMaxDownvotesPerSong,
+          votingPenalty: editVotingPenalty,
         },
         {
           onSuccess: () => {
@@ -417,7 +524,7 @@ export const LeagueSettingsSheet = forwardRef<
             </View>
 
             {/* Voting Window Presets */}
-            <View className="mb-6">
+            <View className="mb-4">
               <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
                 Voting window (after submissions close)
               </Text>
@@ -446,12 +553,57 @@ export const LeagueSettingsSheet = forwardRef<
               </View>
             </View>
 
+            {/* Deadline Behavior */}
+            <View className="mb-6">
+              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                Deadline behavior
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {DEADLINE_BEHAVIORS.map((preset) => (
+                  <Pressable
+                    key={preset.value}
+                    onPress={() => setEditDeadlineBehavior(preset.value)}
+                    className={`rounded-full px-4 py-2 ${
+                      editDeadlineBehavior === preset.value
+                        ? "border border-[#c03484] bg-[#c03484]/20"
+                        : "border border-[#3D1F5C] bg-[#0A0A14]"
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm font-medium ${
+                        editDeadlineBehavior === preset.value
+                          ? "text-[#c03484]"
+                          : "text-[#9B8AB8]"
+                      }`}
+                    >
+                      {preset.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+              <Text className="mt-1.5 text-xs text-[#9B8AB8]">
+                {
+                  DEADLINE_BEHAVIORS.find(
+                    (b) => b.value === editDeadlineBehavior,
+                  )?.desc
+                }
+              </Text>
+            </View>
+
             {/* Settings */}
             <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
               Settings
             </Text>
 
             <View className="mb-6 gap-3">
+              <SettingsStepper
+                label="Max members"
+                value={editMaxMembers}
+                onChange={setEditMaxMembers}
+                min={2}
+                max={50}
+              />
+
               <SettingsStepper
                 label="Songs per round"
                 value={editSongsPerRound}
@@ -466,6 +618,14 @@ export const LeagueSettingsSheet = forwardRef<
                 onChange={setEditUpvotePoints}
                 min={1}
                 max={20}
+              />
+
+              <NullableStepper
+                label="Max upvotes per song"
+                value={editMaxUpvotesPerSong}
+                onChange={setEditMaxUpvotesPerSong}
+                min={1}
+                max={10}
               />
 
               <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
@@ -486,14 +646,41 @@ export const LeagueSettingsSheet = forwardRef<
               </View>
 
               {editAllowDownvotes && (
-                <SettingsStepper
-                  label="Downvote points"
-                  value={editDownvotePoints}
-                  onChange={setEditDownvotePoints}
-                  min={1}
-                  max={10}
-                />
+                <>
+                  <SettingsStepper
+                    label="Downvote points"
+                    value={editDownvotePoints}
+                    onChange={setEditDownvotePoints}
+                    min={1}
+                    max={10}
+                  />
+                  <NullableStepper
+                    label="Max downvotes per song"
+                    value={editMaxDownvotesPerSong}
+                    onChange={setEditMaxDownvotesPerSong}
+                    min={1}
+                    max={5}
+                  />
+                </>
               )}
+
+              {/* Voting Penalty Toggle */}
+              <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
+                <View className="flex-1">
+                  <Text className="text-base font-medium text-[#E8E0F0]">
+                    Voting penalty
+                  </Text>
+                  <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                    Penalize members who don't vote
+                  </Text>
+                </View>
+                <Switch
+                  value={editVotingPenalty}
+                  onValueChange={setEditVotingPenalty}
+                  trackColor={{ false: "#3D1F5C", true: "#c03484" }}
+                  thumbColor={editVotingPenalty ? "#0A0A14" : "#9B8AB8"}
+                />
+              </View>
             </View>
 
             {/* Save Button */}

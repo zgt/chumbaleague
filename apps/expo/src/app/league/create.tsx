@@ -58,6 +58,72 @@ function NumberStepper({
   );
 }
 
+function NullableNumberStepper({
+  value,
+  onChange,
+  min,
+  max,
+  label,
+  nullLabel = "No limit",
+}: {
+  value: number | null;
+  onChange: (v: number | null) => void;
+  min: number;
+  max: number;
+  label: string;
+  nullLabel?: string;
+}) {
+  const isLimited = value !== null;
+  return (
+    <View className="rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
+      <View className="flex-row items-center justify-between">
+        <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+        <View className="flex-row items-center gap-3">
+          <Pressable
+            onPress={() => onChange(isLimited ? null : min)}
+            className={`rounded-full px-3 py-1 ${
+              isLimited
+                ? "border border-[#c03484] bg-[#c03484]/20"
+                : "border border-[#3D1F5C] bg-[#3D1F5C]"
+            }`}
+          >
+            <Text
+              className={`text-xs font-medium ${
+                isLimited ? "text-[#c03484]" : "text-[#9B8AB8]"
+              }`}
+            >
+              {isLimited ? "Limited" : nullLabel}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+      {isLimited && (
+        <View className="mt-3 flex-row items-center justify-end gap-3">
+          <Pressable
+            onPress={() => onChange(Math.max(min, value - 1))}
+            disabled={value <= min}
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            style={value <= min ? { opacity: 0.4 } : undefined}
+          >
+            <ChevronDown size={20} color="#E8E0F0" />
+          </Pressable>
+          <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+            {value}
+          </Text>
+          <Pressable
+            onPress={() => onChange(Math.min(max, value + 1))}
+            disabled={value >= max}
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            style={value >= max ? { opacity: 0.4 } : undefined}
+          >
+            <ChevronUp size={20} color="#E8E0F0" />
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+}
+
 const SUBMISSION_WINDOW_PRESETS = [
   { label: "1 day", days: 1 },
   { label: "2 days", days: 2 },
@@ -73,18 +139,39 @@ const VOTING_WINDOW_PRESETS = [
   { label: "5 days", days: 5 },
 ];
 
+const DEADLINE_BEHAVIORS = [
+  { label: "Steady", value: "STEADY" as const, desc: "Fixed deadlines" },
+  {
+    label: "Accelerated",
+    value: "ACCELERATED" as const,
+    desc: "Earlier if all submit",
+  },
+  { label: "Speedy", value: "SPEEDY" as const, desc: "Fast transitions" },
+];
+
 export default function CreateLeague() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [maxMembers, setMaxMembers] = useState(20);
   const [songsPerRound, setSongsPerRound] = useState(1);
   const [upvotePoints, setUpvotePoints] = useState(5);
   const [allowDownvotes, setAllowDownvotes] = useState(false);
   const [downvotePoints, setDownvotePoints] = useState(3);
   const [submissionWindowDays, setSubmissionWindowDays] = useState(3);
   const [votingWindowDays, setVotingWindowDays] = useState(2);
+  const [deadlineBehavior, setDeadlineBehavior] = useState<
+    "STEADY" | "ACCELERATED" | "SPEEDY"
+  >("STEADY");
+  const [maxUpvotesPerSong, setMaxUpvotesPerSong] = useState<number | null>(
+    null,
+  );
+  const [maxDownvotesPerSong, setMaxDownvotesPerSong] = useState<number | null>(
+    null,
+  );
+  const [votingPenalty, setVotingPenalty] = useState(false);
 
   const createMutation = useMutation(
     trpc.musicLeague.createLeague.mutationOptions({
@@ -108,12 +195,17 @@ export default function CreateLeague() {
     createMutation.mutate({
       name: name.trim(),
       description: description.trim() || undefined,
+      maxMembers,
       songsPerRound,
       upvotePointsPerRound: upvotePoints,
       allowDownvotes,
       submissionWindowDays,
       votingWindowDays,
       downvotePointsPerRound: downvotePoints,
+      deadlineBehavior,
+      maxUpvotesPerSong,
+      maxDownvotesPerSong,
+      votingPenalty,
     });
   };
 
@@ -223,7 +315,7 @@ export default function CreateLeague() {
               </View>
 
               {/* Voting Window Presets */}
-              <View className="mb-6">
+              <View className="mb-4">
                 <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
                   Voting window (after submissions close)
                 </Text>
@@ -252,12 +344,57 @@ export default function CreateLeague() {
                 </View>
               </View>
 
+              {/* Deadline Behavior */}
+              <View className="mb-6">
+                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                  Deadline behavior
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {DEADLINE_BEHAVIORS.map((preset) => (
+                    <Pressable
+                      key={preset.value}
+                      onPress={() => setDeadlineBehavior(preset.value)}
+                      className={`rounded-full px-4 py-2 ${
+                        deadlineBehavior === preset.value
+                          ? "border border-[#c03484] bg-[#c03484]/20"
+                          : "border border-[#3D1F5C] bg-[#1A0E2E]"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          deadlineBehavior === preset.value
+                            ? "text-[#c03484]"
+                            : "text-[#9B8AB8]"
+                        }`}
+                      >
+                        {preset.label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Text className="mt-1.5 text-xs text-[#9B8AB8]">
+                  {
+                    DEADLINE_BEHAVIORS.find(
+                      (b) => b.value === deadlineBehavior,
+                    )?.desc
+                  }
+                </Text>
+              </View>
+
               {/* Settings */}
               <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
                 Settings
               </Text>
 
               <View className="mb-4 gap-3">
+                <NumberStepper
+                  label="Max members"
+                  value={maxMembers}
+                  onChange={setMaxMembers}
+                  min={2}
+                  max={50}
+                />
+
                 <NumberStepper
                   label="Songs per round"
                   value={songsPerRound}
@@ -272,6 +409,14 @@ export default function CreateLeague() {
                   onChange={setUpvotePoints}
                   min={1}
                   max={20}
+                />
+
+                <NullableNumberStepper
+                  label="Max upvotes per song"
+                  value={maxUpvotesPerSong}
+                  onChange={setMaxUpvotesPerSong}
+                  min={1}
+                  max={10}
                 />
 
                 {/* Allow Downvotes Toggle */}
@@ -294,14 +439,41 @@ export default function CreateLeague() {
 
                 {/* Downvote Points (only when downvotes enabled) */}
                 {allowDownvotes && (
-                  <NumberStepper
-                    label="Downvote points per round"
-                    value={downvotePoints}
-                    onChange={setDownvotePoints}
-                    min={1}
-                    max={10}
-                  />
+                  <>
+                    <NumberStepper
+                      label="Downvote points per round"
+                      value={downvotePoints}
+                      onChange={setDownvotePoints}
+                      min={1}
+                      max={10}
+                    />
+                    <NullableNumberStepper
+                      label="Max downvotes per song"
+                      value={maxDownvotesPerSong}
+                      onChange={setMaxDownvotesPerSong}
+                      min={1}
+                      max={5}
+                    />
+                  </>
                 )}
+
+                {/* Voting Penalty Toggle */}
+                <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-[#E8E0F0]">
+                      Voting penalty
+                    </Text>
+                    <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                      Penalize members who don't vote
+                    </Text>
+                  </View>
+                  <Switch
+                    value={votingPenalty}
+                    onValueChange={setVotingPenalty}
+                    trackColor={{ false: "#3D1F5C", true: "#c03484" }}
+                    thumbColor={votingPenalty ? "#0A0A14" : "#9B8AB8"}
+                  />
+                </View>
               </View>
 
               {/* Create Button */}
