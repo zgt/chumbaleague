@@ -2,8 +2,8 @@
   "name": "chumbaleague",
   "private": true,
   "engines": {
-    "node": "^25.2.1",
-    "pnpm": "^10.27.0"
+    "node": ">=20",
+    "pnpm": ">=9"
   },
   "packageManager": "pnpm@10.28.2",
   "scripts": {
