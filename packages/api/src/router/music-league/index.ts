@@ -2,6 +2,7 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
+import type { db as _db } from "@acme/db/client";
 import { and, eq, inArray, ne, sql } from "@acme/db";
 import {
   Comment,
@@ -14,8 +15,16 @@ import {
 } from "@acme/db/schema";
 
 import { flagContentIfNeeded } from "../../lib/content-filter";
-import { notifyResultsAvailable, notifyRoundStarted, notifyVotingOpen } from "../../lib/email/notifications";
-import { pushNotifyResultsAvailable, pushNotifyRoundStarted, pushNotifyVotingOpen } from "../../lib/push/notifications";
+import {
+  notifyResultsAvailable,
+  notifyRoundStarted,
+  notifyVotingOpen,
+} from "../../lib/email/notifications";
+import {
+  pushNotifyResultsAvailable,
+  pushNotifyRoundStarted,
+  pushNotifyVotingOpen,
+} from "../../lib/push/notifications";
 import { createPlaylist, searchTracks } from "../../lib/spotify";
 import { protectedProcedure, publicProcedure } from "../../trpc";
 
@@ -31,11 +40,7 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function checkAutoAdvance(
-  db: any,
-  roundId: string,
-) {
+async function checkAutoAdvance(db: typeof _db, roundId: string) {
   const round = await db.query.Round.findFirst({
     where: eq(Round.id, roundId),
     with: {
@@ -60,7 +65,10 @@ async function checkAutoAdvance(
     const submitterIds = new Set<string>();
     const submissionsByUser = new Map<string, number>();
     for (const sub of round.submissions) {
-      submissionsByUser.set(sub.userId, (submissionsByUser.get(sub.userId) ?? 0) + 1);
+      submissionsByUser.set(
+        sub.userId,
+        (submissionsByUser.get(sub.userId) ?? 0) + 1,
+      );
     }
     for (const [userId, count] of submissionsByUser) {
       if (count >= league.songsPerRound) submitterIds.add(userId);
@@ -102,11 +110,8 @@ async function checkAutoAdvance(
 
       // Activate next pending round
       const pendingRound = await db.query.Round.findFirst({
-        where: and(
-          eq(Round.leagueId, league.id),
-          eq(Round.status, "PENDING"),
-        ),
-        orderBy: (r: any, { asc }: any) => [asc(r.sortOrder)],
+        where: and(eq(Round.leagueId, league.id), eq(Round.status, "PENDING")),
+        orderBy: (r, { asc }) => [asc(r.sortOrder)],
       });
 
       if (pendingRound) {
@@ -269,14 +274,20 @@ export const musicLeagueRouter = {
         submissionWindowDays: z.number().int().min(1).max(14).default(3),
         votingWindowDays: z.number().int().min(1).max(14).default(2),
         downvotePointsPerRound: z.number().int().min(1).max(10).default(3),
-        deadlineBehavior: z.enum(["STEADY", "ACCELERATED", "SPEEDY"]).default("STEADY"),
+        deadlineBehavior: z
+          .enum(["STEADY", "ACCELERATED", "SPEEDY"])
+          .default("STEADY"),
         maxUpvotesPerSong: z.number().int().min(1).max(25).nullish(),
         maxDownvotesPerSong: z.number().int().min(1).max(10).nullish(),
         votingPenalty: z.boolean().default(false),
-        rounds: z.array(z.object({
-          themeName: z.string().min(1).max(200),
-          themeDescription: z.string().max(500).optional(),
-        })).optional(),
+        rounds: z
+          .array(
+            z.object({
+              themeName: z.string().min(1).max(200),
+              themeDescription: z.string().max(500).optional(),
+            }),
+          )
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -312,6 +323,7 @@ export const musicLeagueRouter = {
         // Create inline rounds — all start as PENDING until owner starts the league
         if (input.rounds && input.rounds.length > 0) {
           for (let i = 0; i < input.rounds.length; i++) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- bounds checked by loop
             const round = input.rounds[i]!;
             await tx.insert(Round).values({
               leagueId: leagueId,
@@ -328,7 +340,11 @@ export const musicLeagueRouter = {
         }
       });
 
-      void flagContentIfNeeded("LEAGUE", leagueId, [input.name, input.description].filter(Boolean).join(" "));
+      void flagContentIfNeeded(
+        "LEAGUE",
+        leagueId,
+        [input.name, input.description].filter(Boolean).join(" "),
+      );
 
       return { id: leagueId };
     }),
@@ -343,7 +359,7 @@ export const musicLeagueRouter = {
         ),
       });
 
-      if (!member || member.role !== "OWNER") {
+      if (member?.role !== "OWNER") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can start the league",
@@ -364,7 +380,10 @@ export const musicLeagueRouter = {
           eq(Round.leagueId, input.leagueId),
           eq(Round.status, "PENDING"),
         ),
-        orderBy: (round, { asc }) => [asc(round.sortOrder), asc(round.roundNumber)],
+        orderBy: (round, { asc }) => [
+          asc(round.sortOrder),
+          asc(round.roundNumber),
+        ],
       });
 
       if (!firstRound) {
@@ -398,7 +417,10 @@ export const musicLeagueRouter = {
 
       const now = new Date();
       const submissionDeadline = addDays(now, league.submissionWindowDays);
-      const votingDeadline = addDays(submissionDeadline, league.votingWindowDays);
+      const votingDeadline = addDays(
+        submissionDeadline,
+        league.votingWindowDays,
+      );
 
       await ctx.db
         .update(Round)
@@ -451,7 +473,10 @@ export const musicLeagueRouter = {
             orderBy: (member, { asc }) => [asc(member.joinedAt)],
           },
           rounds: {
-            orderBy: (round, { asc }) => [asc(round.sortOrder), asc(round.roundNumber)],
+            orderBy: (round, { asc }) => [
+              asc(round.sortOrder),
+              asc(round.roundNumber),
+            ],
             with: {
               submissions: {
                 with: {
@@ -580,10 +605,12 @@ export const musicLeagueRouter = {
       const sortOrder = existingRounds.length;
       const roundNumber = sortOrder + 1;
 
-      const lastRound = existingRounds.length > 0
-        ? existingRounds.reduce((latest, r) =>
-            (r.roundNumber > latest.roundNumber ? r : latest))
-        : null;
+      const lastRound =
+        existingRounds.length > 0
+          ? existingRounds.reduce((latest, r) =>
+              r.roundNumber > latest.roundNumber ? r : latest,
+            )
+          : null;
 
       const addDays = (date: Date, days: number): Date => {
         const result = new Date(date);
@@ -632,7 +659,11 @@ export const musicLeagueRouter = {
       }
 
       if (round?.id) {
-        void flagContentIfNeeded("ROUND", round.id, [input.themeName, input.themeDescription].filter(Boolean).join(" "));
+        void flagContentIfNeeded(
+          "ROUND",
+          round.id,
+          [input.themeName, input.themeDescription].filter(Boolean).join(" "),
+        );
       }
 
       return round;
@@ -893,26 +924,28 @@ export const musicLeagueRouter = {
       }
 
       // Per-song vote limits
-      if (round.league.maxUpvotesPerSong != null) {
+      const maxUp = round.league.maxUpvotesPerSong;
+      if (maxUp != null) {
         const overLimit = input.votes.find(
-          (v) => v.points > 0 && v.points > round.league.maxUpvotesPerSong!,
+          (v) => v.points > 0 && v.points > maxUp,
         );
         if (overLimit) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Upvotes per song (${overLimit.points}) exceed the limit of ${round.league.maxUpvotesPerSong}`,
+            message: `Upvotes per song (${overLimit.points}) exceed the limit of ${maxUp}`,
           });
         }
       }
 
-      if (round.league.maxDownvotesPerSong != null) {
+      const maxDown = round.league.maxDownvotesPerSong;
+      if (maxDown != null) {
         const overLimit = input.votes.find(
-          (v) => v.points < 0 && Math.abs(v.points) > round.league.maxDownvotesPerSong!,
+          (v) => v.points < 0 && Math.abs(v.points) > maxDown,
         );
         if (overLimit) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Downvotes per song (${Math.abs(overLimit.points)}) exceed the limit of ${round.league.maxDownvotesPerSong}`,
+            message: `Downvotes per song (${Math.abs(overLimit.points)}) exceed the limit of ${maxDown}`,
           });
         }
       }
@@ -1067,7 +1100,9 @@ export const musicLeagueRouter = {
         submissionWindowDays: z.number().int().min(1).max(14).optional(),
         votingWindowDays: z.number().int().min(1).max(14).optional(),
         downvotePointsPerRound: z.number().int().min(1).max(10).optional(),
-        deadlineBehavior: z.enum(["STEADY", "ACCELERATED", "SPEEDY"]).optional(),
+        deadlineBehavior: z
+          .enum(["STEADY", "ACCELERATED", "SPEEDY"])
+          .optional(),
         maxUpvotesPerSong: z.number().int().min(1).max(25).nullish(),
         maxDownvotesPerSong: z.number().int().min(1).max(10).nullish(),
         votingPenalty: z.boolean().optional(),
@@ -1128,8 +1163,11 @@ export const musicLeagueRouter = {
 
       await ctx.db.update(League).set(setValues).where(eq(League.id, leagueId));
 
-      const textToCheck = [updates.name, updates.description].filter(Boolean).join(" ");
-      if (textToCheck) void flagContentIfNeeded("LEAGUE", leagueId, textToCheck);
+      const textToCheck = [updates.name, updates.description]
+        .filter(Boolean)
+        .join(" ");
+      if (textToCheck)
+        void flagContentIfNeeded("LEAGUE", leagueId, textToCheck);
 
       return { success: true };
     }),
@@ -1140,10 +1178,12 @@ export const musicLeagueRouter = {
     .input(
       z.object({
         leagueId: z.string(),
-        rounds: z.array(z.object({
-          roundId: z.string(),
-          sortOrder: z.number().int(),
-        })),
+        rounds: z.array(
+          z.object({
+            roundId: z.string(),
+            sortOrder: z.number().int(),
+          }),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {

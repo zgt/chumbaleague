@@ -25,7 +25,7 @@ export function NumberStepper({
   return (
     <div className="flex items-center gap-3">
       {label && (
-        <span className="text-sm font-medium min-w-0 flex-1">{label}</span>
+        <span className="min-w-0 flex-1 text-sm font-medium">{label}</span>
       )}
       <div className="flex items-center gap-1">
         <Button

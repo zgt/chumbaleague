@@ -27,12 +27,7 @@ import { trpc } from "~/utils/api";
 
 export interface ReportSheetRef {
   present: (params: {
-    contentType:
-      | "LEAGUE"
-      | "SUBMISSION"
-      | "USER"
-      | "COMMENT"
-      | "ROUND";
+    contentType: "LEAGUE" | "SUBMISSION" | "USER" | "COMMENT" | "ROUND";
     contentId: string;
     contentLabel?: string;
     reportedUserId?: string;
@@ -41,9 +36,21 @@ export interface ReportSheetRef {
 }
 
 const REASONS = [
-  { key: "SPAM" as const, label: "Spam", description: "Unwanted or repetitive content" },
-  { key: "OFFENSIVE" as const, label: "Offensive", description: "Inappropriate or harmful content" },
-  { key: "HARASSMENT" as const, label: "Harassment", description: "Bullying or targeted abuse" },
+  {
+    key: "SPAM" as const,
+    label: "Spam",
+    description: "Unwanted or repetitive content",
+  },
+  {
+    key: "OFFENSIVE" as const,
+    label: "Offensive",
+    description: "Inappropriate or harmful content",
+  },
+  {
+    key: "HARASSMENT" as const,
+    label: "Harassment",
+    description: "Bullying or targeted abuse",
+  },
   { key: "OTHER" as const, label: "Other", description: "Something else" },
 ];
 
@@ -252,7 +259,9 @@ export const ReportSheet = forwardRef<ReportSheetRef>((_, ref) => {
                 }}
               />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 15, fontWeight: "600", color: "#DCE4E4" }}>
+                <Text
+                  style={{ fontSize: 15, fontWeight: "600", color: "#DCE4E4" }}
+                >
                   {reason.label}
                 </Text>
                 <Text style={{ fontSize: 12, color: "#8FA8A8", marginTop: 1 }}>

@@ -128,35 +128,35 @@ export default function SettingsScreen() {
         <View className="flex-row items-center px-4 py-3">
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#1A0E2E]"
+            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#071f1a]"
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ChevronLeft size={20} color="#E8E0F0" />
+            <ChevronLeft size={20} color="#e0f0eb" />
           </Pressable>
-          <Text className="text-2xl font-bold text-[#E8E0F0]">Settings</Text>
+          <Text className="text-2xl font-bold text-[#e0f0eb]">Settings</Text>
         </View>
 
         <View className="flex-1 px-4">
           {/* Notification Section Header */}
           <View className="mb-4 flex-row items-center gap-3">
             {allEnabled ? (
-              <Bell size={22} color="#c03484" />
+              <Bell size={22} color="#10b981" />
             ) : (
-              <BellOff size={22} color="#9B8AB8" />
+              <BellOff size={22} color="#6b9b8a" />
             )}
             <View>
-              <Text className="text-lg font-bold text-[#E8E0F0]">
+              <Text className="text-lg font-bold text-[#e0f0eb]">
                 Notifications
               </Text>
-              <Text className="text-sm text-[#9B8AB8]">
+              <Text className="text-sm text-[#6b9b8a]">
                 Choose which notifications you receive
               </Text>
             </View>
           </View>
 
           {/* Notification Toggles */}
-          <View className="overflow-hidden rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E]">
+          <View className="overflow-hidden rounded-2xl border border-[#0f3a2e] bg-[#071f1a]">
             {NOTIFICATION_PREFS.map((pref, index) => (
               <View
                 key={pref.key}
@@ -167,22 +167,22 @@ export default function SettingsScreen() {
                   padding: 16,
                   borderBottomWidth:
                     index < NOTIFICATION_PREFS.length - 1 ? 1 : 0,
-                  borderBottomColor: "#3D1F5C",
+                  borderBottomColor: "#0f3a2e",
                 }}
               >
                 <View style={{ flex: 1, paddingRight: 16 }}>
-                  <Text className="text-base font-medium text-[#E8E0F0]">
+                  <Text className="text-base font-medium text-[#e0f0eb]">
                     {pref.label}
                   </Text>
-                  <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                  <Text className="mt-0.5 text-xs text-[#6b9b8a]">
                     {pref.description}
                   </Text>
                 </View>
                 <Switch
                   value={prefs[pref.key]}
                   onValueChange={() => handleToggle(pref.key)}
-                  trackColor={{ false: "#3D1F5C", true: "#c03484" }}
-                  thumbColor="#E8E0F0"
+                  trackColor={{ false: "#0f3a2e", true: "#10b981" }}
+                  thumbColor="#e0f0eb"
                 />
               </View>
             ))}
@@ -192,15 +192,15 @@ export default function SettingsScreen() {
           <Pressable
             onPress={handleSave}
             disabled={!hasChanges || saveMutation.isPending}
-            className="mt-6 items-center rounded-2xl bg-[#c03484] py-4"
+            className="mt-6 items-center rounded-2xl bg-[#10b981] py-4"
             style={{
               opacity: !hasChanges || saveMutation.isPending ? 0.5 : 1,
             }}
           >
             {saveMutation.isPending ? (
-              <ActivityIndicator color="#E8E0F0" size="small" />
+              <ActivityIndicator color="#e0f0eb" size="small" />
             ) : (
-              <Text className="text-base font-bold text-[#E8E0F0]">
+              <Text className="text-base font-bold text-[#e0f0eb]">
                 {hasChanges ? "Save Changes" : "No Changes"}
               </Text>
             )}

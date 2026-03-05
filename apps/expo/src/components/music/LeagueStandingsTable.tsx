@@ -24,7 +24,7 @@ export function LeagueStandingsTable({
   if (standings.length === 0) {
     return (
       <View className="items-center py-6">
-        <Text className="text-sm text-[#9B8AB8] italic">
+        <Text className="text-sm text-[#6b9b8a] italic">
           No standings yet. Complete a round to see rankings.
         </Text>
       </View>
@@ -32,19 +32,19 @@ export function LeagueStandingsTable({
   }
 
   return (
-    <View className="overflow-hidden rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E]">
+    <View className="overflow-hidden rounded-2xl border border-[#0f3a2e] bg-[#071f1a]">
       {/* Header */}
-      <View className="flex-row items-center border-b border-[#3D1F5C] px-4 py-3">
-        <Text className="w-8 text-xs font-bold text-[#9B8AB8] uppercase">
+      <View className="flex-row items-center border-b border-[#0f3a2e] px-4 py-3">
+        <Text className="w-8 text-xs font-bold text-[#6b9b8a] uppercase">
           #
         </Text>
-        <Text className="flex-1 text-xs font-bold text-[#9B8AB8] uppercase">
+        <Text className="flex-1 text-xs font-bold text-[#6b9b8a] uppercase">
           Player
         </Text>
-        <Text className="w-14 text-center text-xs font-bold text-[#9B8AB8] uppercase">
+        <Text className="w-14 text-center text-xs font-bold text-[#6b9b8a] uppercase">
           Pts
         </Text>
-        <Text className="w-14 text-center text-xs font-bold text-[#9B8AB8] uppercase">
+        <Text className="w-14 text-center text-xs font-bold text-[#6b9b8a] uppercase">
           Wins
         </Text>
       </View>
@@ -58,8 +58,8 @@ export function LeagueStandingsTable({
           <View
             key={entry.user.id}
             className={`flex-row items-center px-4 py-3 ${
-              isCurrentUser ? "bg-[#c03484]/10" : ""
-            } ${index < standings.length - 1 ? "border-b border-[#3D1F5C]/50" : ""}`}
+              isCurrentUser ? "bg-[#10b981]/10" : ""
+            } ${index < standings.length - 1 ? "border-b border-[#0f3a2e]/50" : ""}`}
           >
             {/* Position */}
             <View className="w-8">
@@ -71,7 +71,7 @@ export function LeagueStandingsTable({
                       ? "text-[#C0C0C0]"
                       : position === 3
                         ? "text-[#CD7F32]"
-                        : "text-[#9B8AB8]"
+                        : "text-[#6b9b8a]"
                 }`}
               >
                 {position}
@@ -81,11 +81,11 @@ export function LeagueStandingsTable({
             {/* Player */}
             <View className="flex-1 flex-row items-center gap-2">
               <View
-                className="items-center justify-center rounded-full bg-[#3D1F5C]"
+                className="items-center justify-center rounded-full bg-[#0f3a2e]"
                 style={{ width: 28, height: 28 }}
               >
                 <Text
-                  className="text-xs font-bold text-[#E8E0F0]"
+                  className="text-xs font-bold text-[#e0f0eb]"
                   style={{ fontSize: 11 }}
                 >
                   {(entry.user.name ?? "?").charAt(0).toUpperCase()}
@@ -93,7 +93,7 @@ export function LeagueStandingsTable({
               </View>
               <Text
                 className={`text-sm font-medium ${
-                  isCurrentUser ? "text-[#c03484]" : "text-[#E8E0F0]"
+                  isCurrentUser ? "text-[#10b981]" : "text-[#e0f0eb]"
                 }`}
                 numberOfLines={1}
               >
@@ -103,12 +103,12 @@ export function LeagueStandingsTable({
             </View>
 
             {/* Points */}
-            <Text className="w-14 text-center text-sm font-bold text-[#E8E0F0]">
+            <Text className="w-14 text-center text-sm font-bold text-[#e0f0eb]">
               {entry.totalPoints}
             </Text>
 
             {/* Wins */}
-            <Text className="w-14 text-center text-sm font-medium text-[#9B8AB8]">
+            <Text className="w-14 text-center text-sm font-medium text-[#6b9b8a]">
               {entry.roundsWon}
             </Text>
           </View>

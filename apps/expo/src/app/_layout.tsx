@@ -27,7 +27,7 @@ function AppContent() {
               screenOptions={{
                 headerShown: false,
                 headerStyle: {
-                  backgroundColor: "#c03484",
+                  backgroundColor: "#10b981",
                 },
                 contentStyle: {
                   backgroundColor:

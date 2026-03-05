@@ -26,7 +26,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: "net.calayo.chumbaleague",
     adaptiveIcon: {
       foregroundImage: "./assets/icon-light.png",
-      backgroundColor: "#1F104A",
+      backgroundColor: "#071f1a",
     },
     intentFilters: [
       {
@@ -62,7 +62,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-notifications",
       {
         icon: "./assets/icon-light.png",
-        color: "#c03484",
+        color: "#10b981",
       },
     ],
     [

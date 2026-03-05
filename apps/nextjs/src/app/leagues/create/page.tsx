@@ -19,8 +19,8 @@ import {
 import { Switch } from "@acme/ui/switch";
 import { Textarea } from "@acme/ui/textarea";
 
-import { AppShell } from "~/components/app-shell";
 import type { RoundDraft } from "~/components/music/round-editor";
+import { AppShell } from "~/components/app-shell";
 import { RoundEditor } from "~/components/music/round-editor";
 import { NumberStepper } from "~/components/number-stepper";
 import { useTRPC } from "~/trpc/react";
@@ -85,9 +85,9 @@ export default function CreateLeaguePage() {
   const [maxUpvotesPerSong, setMaxUpvotesPerSong] = useState<number | null>(
     null,
   );
-  const [maxDownvotesPerSong, setMaxDownvotesPerSong] = useState<
-    number | null
-  >(null);
+  const [maxDownvotesPerSong, setMaxDownvotesPerSong] = useState<number | null>(
+    null,
+  );
   const [votingPenalty, setVotingPenalty] = useState(false);
 
   // Timing

@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { and, eq } from "@acme/db";
-import { db } from "@acme/db/client";
-import { League, Round } from "@acme/db/schema";
-
 import {
   notifyResultsAvailable,
   notifyRoundStarted,
@@ -12,6 +8,11 @@ import {
   pushNotifyResultsAvailable,
   pushNotifyRoundStarted,
 } from "@acme/api/push-notifications";
+import { and, eq } from "@acme/db";
+import { db } from "@acme/db/client";
+import { League, Round } from "@acme/db/schema";
+
+import { env } from "~/env";
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
@@ -56,7 +57,7 @@ async function activatePendingRound(leagueId: string) {
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 

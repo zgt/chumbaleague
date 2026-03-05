@@ -31,27 +31,27 @@ function NumberStepper({
   label: string;
 }) {
   return (
-    <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
-      <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+    <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 py-3">
+      <Text className="text-base font-medium text-[#e0f0eb]">{label}</Text>
       <View className="flex-row items-center gap-3">
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
-          className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+          className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
           style={value <= min ? { opacity: 0.4 } : undefined}
         >
-          <ChevronDown size={20} color="#E8E0F0" />
+          <ChevronDown size={20} color="#e0f0eb" />
         </Pressable>
-        <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+        <Text className="w-8 text-center text-lg font-bold text-[#10b981]">
           {value}
         </Text>
         <Pressable
           onPress={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+          className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
           style={value >= max ? { opacity: 0.4 } : undefined}
         >
-          <ChevronUp size={20} color="#E8E0F0" />
+          <ChevronUp size={20} color="#e0f0eb" />
         </Pressable>
       </View>
     </View>
@@ -75,21 +75,21 @@ function NullableNumberStepper({
 }) {
   const isLimited = value !== null;
   return (
-    <View className="rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
+    <View className="rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 py-3">
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+        <Text className="text-base font-medium text-[#e0f0eb]">{label}</Text>
         <View className="flex-row items-center gap-3">
           <Pressable
             onPress={() => onChange(isLimited ? null : min)}
             className={`rounded-full px-3 py-1 ${
               isLimited
-                ? "border border-[#c03484] bg-[#c03484]/20"
-                : "border border-[#3D1F5C] bg-[#3D1F5C]"
+                ? "border border-[#10b981] bg-[#10b981]/20"
+                : "border border-[#0f3a2e] bg-[#0f3a2e]"
             }`}
           >
             <Text
               className={`text-xs font-medium ${
-                isLimited ? "text-[#c03484]" : "text-[#9B8AB8]"
+                isLimited ? "text-[#10b981]" : "text-[#6b9b8a]"
               }`}
             >
               {isLimited ? "Limited" : nullLabel}
@@ -102,21 +102,21 @@ function NullableNumberStepper({
           <Pressable
             onPress={() => onChange(Math.max(min, value - 1))}
             disabled={value <= min}
-            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
             style={value <= min ? { opacity: 0.4 } : undefined}
           >
-            <ChevronDown size={20} color="#E8E0F0" />
+            <ChevronDown size={20} color="#e0f0eb" />
           </Pressable>
-          <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+          <Text className="w-8 text-center text-lg font-bold text-[#10b981]">
             {value}
           </Text>
           <Pressable
             onPress={() => onChange(Math.min(max, value + 1))}
             disabled={value >= max}
-            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
             style={value >= max ? { opacity: 0.4 } : undefined}
           >
-            <ChevronUp size={20} color="#E8E0F0" />
+            <ChevronUp size={20} color="#e0f0eb" />
           </Pressable>
         </View>
       )}
@@ -218,11 +218,11 @@ export default function CreateLeague() {
         <View className="flex-row items-center justify-between px-4 py-4">
           <Pressable
             onPress={() => router.back()}
-            className="rounded-full bg-[#3D1F5C] p-2"
+            className="rounded-full bg-[#0f3a2e] p-2"
           >
-            <ArrowLeft color="#E8E0F0" size={24} />
+            <ArrowLeft color="#e0f0eb" size={24} />
           </Pressable>
-          <Text className="text-xl font-bold text-[#E8E0F0]">
+          <Text className="text-xl font-bold text-[#e0f0eb]">
             Create League
           </Text>
           <View className="w-10" />
@@ -237,16 +237,16 @@ export default function CreateLeague() {
             <View>
               {/* Name */}
               <View className="mb-4">
-                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                   League Name *
                 </Text>
                 <TextInput
                   value={name}
                   onChangeText={setName}
                   placeholder="e.g. Friday Vibes"
-                  placeholderTextColor="#9B8AB8"
+                  placeholderTextColor="#6b9b8a"
                   maxLength={100}
-                  className="rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 text-[#E8E0F0]"
+                  className="rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 text-[#e0f0eb]"
                   style={{
                     fontSize: 16,
                     height: 48,
@@ -257,19 +257,19 @@ export default function CreateLeague() {
 
               {/* Description */}
               <View className="mb-6">
-                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                   Description
                 </Text>
                 <TextInput
                   value={description}
                   onChangeText={setDescription}
                   placeholder="What's this league about?"
-                  placeholderTextColor="#9B8AB8"
+                  placeholderTextColor="#6b9b8a"
                   maxLength={500}
                   multiline
                   numberOfLines={3}
                   textAlignVertical="top"
-                  className="rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 text-[#E8E0F0]"
+                  className="rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 text-[#e0f0eb]"
                   style={{
                     fontSize: 16,
                     minHeight: 80,
@@ -280,13 +280,13 @@ export default function CreateLeague() {
               </View>
 
               {/* Round Windows */}
-              <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
+              <Text className="mb-3 text-lg font-bold text-[#e0f0eb]">
                 Round Windows
               </Text>
 
               {/* Submission Window Presets */}
               <View className="mb-4">
-                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                   Submission window
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
@@ -296,15 +296,15 @@ export default function CreateLeague() {
                       onPress={() => setSubmissionWindowDays(preset.days)}
                       className={`rounded-full px-4 py-2 ${
                         submissionWindowDays === preset.days
-                          ? "border border-[#c03484] bg-[#c03484]/20"
-                          : "border border-[#3D1F5C] bg-[#1A0E2E]"
+                          ? "border border-[#10b981] bg-[#10b981]/20"
+                          : "border border-[#0f3a2e] bg-[#071f1a]"
                       }`}
                     >
                       <Text
                         className={`text-sm font-medium ${
                           submissionWindowDays === preset.days
-                            ? "text-[#c03484]"
-                            : "text-[#9B8AB8]"
+                            ? "text-[#10b981]"
+                            : "text-[#6b9b8a]"
                         }`}
                       >
                         {preset.label}
@@ -316,7 +316,7 @@ export default function CreateLeague() {
 
               {/* Voting Window Presets */}
               <View className="mb-4">
-                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                   Voting window (after submissions close)
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
@@ -326,15 +326,15 @@ export default function CreateLeague() {
                       onPress={() => setVotingWindowDays(preset.days)}
                       className={`rounded-full px-4 py-2 ${
                         votingWindowDays === preset.days
-                          ? "border border-[#c03484] bg-[#c03484]/20"
-                          : "border border-[#3D1F5C] bg-[#1A0E2E]"
+                          ? "border border-[#10b981] bg-[#10b981]/20"
+                          : "border border-[#0f3a2e] bg-[#071f1a]"
                       }`}
                     >
                       <Text
                         className={`text-sm font-medium ${
                           votingWindowDays === preset.days
-                            ? "text-[#c03484]"
-                            : "text-[#9B8AB8]"
+                            ? "text-[#10b981]"
+                            : "text-[#6b9b8a]"
                         }`}
                       >
                         {preset.label}
@@ -346,7 +346,7 @@ export default function CreateLeague() {
 
               {/* Deadline Behavior */}
               <View className="mb-6">
-                <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+                <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                   Deadline behavior
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
@@ -356,15 +356,15 @@ export default function CreateLeague() {
                       onPress={() => setDeadlineBehavior(preset.value)}
                       className={`rounded-full px-4 py-2 ${
                         deadlineBehavior === preset.value
-                          ? "border border-[#c03484] bg-[#c03484]/20"
-                          : "border border-[#3D1F5C] bg-[#1A0E2E]"
+                          ? "border border-[#10b981] bg-[#10b981]/20"
+                          : "border border-[#0f3a2e] bg-[#071f1a]"
                       }`}
                     >
                       <Text
                         className={`text-sm font-medium ${
                           deadlineBehavior === preset.value
-                            ? "text-[#c03484]"
-                            : "text-[#9B8AB8]"
+                            ? "text-[#10b981]"
+                            : "text-[#6b9b8a]"
                         }`}
                       >
                         {preset.label}
@@ -372,17 +372,16 @@ export default function CreateLeague() {
                     </Pressable>
                   ))}
                 </View>
-                <Text className="mt-1.5 text-xs text-[#9B8AB8]">
+                <Text className="mt-1.5 text-xs text-[#6b9b8a]">
                   {
-                    DEADLINE_BEHAVIORS.find(
-                      (b) => b.value === deadlineBehavior,
-                    )?.desc
+                    DEADLINE_BEHAVIORS.find((b) => b.value === deadlineBehavior)
+                      ?.desc
                   }
                 </Text>
               </View>
 
               {/* Settings */}
-              <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
+              <Text className="mb-3 text-lg font-bold text-[#e0f0eb]">
                 Settings
               </Text>
 
@@ -420,20 +419,20 @@ export default function CreateLeague() {
                 />
 
                 {/* Allow Downvotes Toggle */}
-                <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
+                <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 py-3">
                   <View className="flex-1">
-                    <Text className="text-base font-medium text-[#E8E0F0]">
+                    <Text className="text-base font-medium text-[#e0f0eb]">
                       Allow downvotes
                     </Text>
-                    <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                    <Text className="mt-0.5 text-xs text-[#6b9b8a]">
                       Members can spend points to downvote songs
                     </Text>
                   </View>
                   <Switch
                     value={allowDownvotes}
                     onValueChange={setAllowDownvotes}
-                    trackColor={{ false: "#3D1F5C", true: "#c03484" }}
-                    thumbColor={allowDownvotes ? "#0A0A14" : "#9B8AB8"}
+                    trackColor={{ false: "#0f3a2e", true: "#10b981" }}
+                    thumbColor={allowDownvotes ? "#020a0a" : "#6b9b8a"}
                   />
                 </View>
 
@@ -458,20 +457,20 @@ export default function CreateLeague() {
                 )}
 
                 {/* Voting Penalty Toggle */}
-                <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] px-4 py-3">
+                <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] px-4 py-3">
                   <View className="flex-1">
-                    <Text className="text-base font-medium text-[#E8E0F0]">
+                    <Text className="text-base font-medium text-[#e0f0eb]">
                       Voting penalty
                     </Text>
-                    <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                    <Text className="mt-0.5 text-xs text-[#6b9b8a]">
                       Penalize members who don't vote
                     </Text>
                   </View>
                   <Switch
                     value={votingPenalty}
                     onValueChange={setVotingPenalty}
-                    trackColor={{ false: "#3D1F5C", true: "#c03484" }}
-                    thumbColor={votingPenalty ? "#0A0A14" : "#9B8AB8"}
+                    trackColor={{ false: "#0f3a2e", true: "#10b981" }}
+                    thumbColor={votingPenalty ? "#020a0a" : "#6b9b8a"}
                   />
                 </View>
               </View>
@@ -483,7 +482,7 @@ export default function CreateLeague() {
                 style={{
                   alignItems: "center",
                   borderRadius: 12,
-                  backgroundColor: "#c03484",
+                  backgroundColor: "#10b981",
                   paddingVertical: 16,
                   marginTop: 16,
                   opacity: createMutation.isPending || !name.trim() ? 0.5 : 1,

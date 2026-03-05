@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition -- session fields may be null at runtime */
 "use client";
 
 import Image from "next/image";
@@ -40,7 +41,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14">
                 <AvatarImage src={session?.user?.image ?? undefined} />
-                <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-lg">
+                <AvatarFallback className="bg-emerald-500/20 text-lg text-emerald-400">
                   {session?.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
                 </AvatarFallback>
               </Avatar>
@@ -100,7 +101,9 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground text-sm">
                   Rounds Participated
                 </p>
-                <p className="text-xl font-bold">{profile.roundsParticipated}</p>
+                <p className="text-xl font-bold">
+                  {profile.roundsParticipated}
+                </p>
               </CardContent>
             </Card>
 

@@ -226,7 +226,7 @@ export default function RoundDetailPage() {
             </div>
             <Link
               href={`/leagues/${params.leagueId}`}
-              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
+              className="text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300"
             >
               Back to League
             </Link>
@@ -443,9 +443,7 @@ export default function RoundDetailPage() {
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
               This will move the round from{" "}
-              <span className="font-medium">
-                {PHASE_LABELS[round.status]}
-              </span>{" "}
+              <span className="font-medium">{PHASE_LABELS[round.status]}</span>{" "}
               to the next phase. This cannot be undone.
             </p>
             {advancePhase.error && (
@@ -458,9 +456,7 @@ export default function RoundDetailPage() {
                 Cancel
               </Button>
               <Button
-                onClick={() =>
-                  advancePhase.mutate({ roundId: params.roundId })
-                }
+                onClick={() => advancePhase.mutate({ roundId: params.roundId })}
                 disabled={advancePhase.isPending}
               >
                 {advancePhase.isPending ? "Advancing..." : "Advance"}
@@ -486,8 +482,8 @@ function PhaseContent({
         <Card>
           <CardContent>
             <div className="flex items-center gap-3 py-2 text-center">
-              <div className="bg-emerald-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <Music2 className="text-emerald-400 h-5 w-5" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                <Music2 className="h-5 w-5 text-emerald-400" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium">Submission Phase</p>
@@ -511,8 +507,8 @@ function PhaseContent({
           <CardContent>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="bg-emerald-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                  <ListMusic className="text-emerald-400 h-5 w-5" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                  <ListMusic className="h-5 w-5 text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Listening Phase</p>
@@ -535,9 +531,7 @@ function PhaseContent({
                     </Button>
                   </a>
                 )}
-                <Link
-                  href={`/leagues/${leagueId}/rounds/${round.id}/playlist`}
-                >
+                <Link href={`/leagues/${leagueId}/rounds/${round.id}/playlist`}>
                   <Button variant="secondary" size="sm">
                     <ListMusic className="h-4 w-4" />
                     Full Playlist

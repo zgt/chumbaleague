@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition -- session fields may be null at runtime */
 "use client";
 
 import { useState } from "react";
@@ -101,7 +102,9 @@ function NotificationForm({
         </Button>
 
         {updatePrefs.isSuccess && !dirty && (
-          <p className="text-center text-sm text-emerald-400">Preferences saved</p>
+          <p className="text-center text-sm text-emerald-400">
+            Preferences saved
+          </p>
         )}
       </CardContent>
     </Card>
@@ -146,9 +149,7 @@ export default function SettingsPage() {
 
             {/* Notification preferences */}
             <NotificationForm
-              initialPrefs={
-                profile?.notificationPreferences ?? DEFAULT_PREFS
-              }
+              initialPrefs={profile?.notificationPreferences ?? DEFAULT_PREFS}
             />
 
             {/* Sign out */}

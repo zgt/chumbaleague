@@ -1,10 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import {
-  index,
-  pgEnum,
-  pgTable,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, pgEnum, pgTable, uniqueIndex } from "drizzle-orm/pg-core";
 
 import { user } from "./auth-schema";
 

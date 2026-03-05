@@ -18,14 +18,14 @@ function useBreadcrumbs() {
 
   const { data: league } = useQuery(
     trpc.musicLeague.getLeagueById.queryOptions(
-      { id: params.leagueId! },
+      { id: params.leagueId ?? "" },
       { enabled: !!params.leagueId },
     ),
   );
 
   const { data: round } = useQuery(
     trpc.musicLeague.getRoundById.queryOptions(
-      { roundId: params.roundId! },
+      { roundId: params.roundId ?? "" },
       { enabled: !!params.roundId },
     ),
   );

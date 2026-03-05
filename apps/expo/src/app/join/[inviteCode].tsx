@@ -51,7 +51,7 @@ export default function JoinLeagueModal() {
     if (isLoading) {
       return (
         <View style={{ alignItems: "center", paddingVertical: 40 }}>
-          <ActivityIndicator color="#c03484" size="large" />
+          <ActivityIndicator color="#10b981" size="large" />
         </View>
       );
     }
@@ -63,7 +63,7 @@ export default function JoinLeagueModal() {
             style={{
               fontSize: 18,
               fontWeight: "700",
-              color: "#E8E0F0",
+              color: "#e0f0eb",
               textAlign: "center",
               marginBottom: 8,
             }}
@@ -73,7 +73,7 @@ export default function JoinLeagueModal() {
           <Text
             style={{
               fontSize: 14,
-              color: "#9B8AB8",
+              color: "#6b9b8a",
               textAlign: "center",
               lineHeight: 20,
               marginBottom: 20,
@@ -87,11 +87,11 @@ export default function JoinLeagueModal() {
             style={{
               alignItems: "center",
               borderRadius: 12,
-              backgroundColor: "#3D1F5C",
+              backgroundColor: "#0f3a2e",
               paddingVertical: 14,
             }}
           >
-            <Text style={{ fontWeight: "600", color: "#E8E0F0", fontSize: 16 }}>
+            <Text style={{ fontWeight: "600", color: "#e0f0eb", fontSize: 16 }}>
               Dismiss
             </Text>
           </Pressable>
@@ -106,7 +106,7 @@ export default function JoinLeagueModal() {
           style={{
             alignSelf: "flex-start",
             borderRadius: 9999,
-            backgroundColor: "rgba(192, 52, 132, 0.2)",
+            backgroundColor: "rgba(16, 185, 129, 0.2)",
             paddingHorizontal: 12,
             paddingVertical: 4,
             marginBottom: 16,
@@ -116,7 +116,7 @@ export default function JoinLeagueModal() {
             style={{
               fontSize: 12,
               fontWeight: "700",
-              color: "#c03484",
+              color: "#10b981",
               textTransform: "uppercase",
             }}
           >
@@ -129,7 +129,7 @@ export default function JoinLeagueModal() {
           style={{
             fontSize: 24,
             fontWeight: "700",
-            color: "#E8E0F0",
+            color: "#e0f0eb",
             marginBottom: 8,
           }}
         >
@@ -142,7 +142,7 @@ export default function JoinLeagueModal() {
             style={{
               fontSize: 14,
               lineHeight: 20,
-              color: "#9B8AB8",
+              color: "#6b9b8a",
               marginBottom: 16,
             }}
           >
@@ -159,8 +159,8 @@ export default function JoinLeagueModal() {
             marginBottom: 24,
           }}
         >
-          <Users size={16} color="#9B8AB8" />
-          <Text style={{ fontSize: 14, color: "#9B8AB8" }}>
+          <Users size={16} color="#6b9b8a" />
+          <Text style={{ fontSize: 14, color: "#6b9b8a" }}>
             {league.memberCount}
             {league.maxMembers ? ` / ${league.maxMembers}` : ""} members
           </Text>
@@ -173,7 +173,7 @@ export default function JoinLeagueModal() {
           style={{
             alignItems: "center",
             borderRadius: 12,
-            backgroundColor: "#c03484",
+            backgroundColor: "#10b981",
             paddingVertical: 16,
             opacity: joinMutation.isPending ? 0.5 : 1,
           }}
@@ -223,8 +223,8 @@ export default function JoinLeagueModal() {
           style={{
             borderRadius: 20,
             borderWidth: 1,
-            borderColor: "#3D1F5C",
-            backgroundColor: "#1A0E2E",
+            borderColor: "#0f3a2e",
+            backgroundColor: "#071f1a",
             padding: 24,
           }}
         >
@@ -236,12 +236,12 @@ export default function JoinLeagueModal() {
               top: 12,
               right: 12,
               borderRadius: 9999,
-              backgroundColor: "#3D1F5C",
+              backgroundColor: "#0f3a2e",
               padding: 6,
               zIndex: 1,
             }}
           >
-            <X color="#9B8AB8" size={18} />
+            <X color="#6b9b8a" size={18} />
           </Pressable>
 
           {renderContent()}

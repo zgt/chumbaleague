@@ -153,7 +153,7 @@ export function SignInButton({
       accessibilityRole="button"
     >
       <Animated.View
-        style={[animatedStyle, { borderColor: "#3D1F5C" }]}
+        style={[animatedStyle, { borderColor: "#0f3a2e" }]}
         className={`${size === "large" ? "h-14 w-14" : "h-10 w-10"} items-center justify-center overflow-hidden rounded-full border`}
       >
         {isLoading ? (

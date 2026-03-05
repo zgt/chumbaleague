@@ -99,15 +99,15 @@ export default function ProfileScreen() {
       id: "submissions",
       label: "Total Submissions",
       value: profile?.totalSubmissions ?? 0,
-      icon: <Music size={20} color="#BA68C8" />,
+      icon: <Music size={20} color="#10b981" />,
     },
   ];
 
   const renderStatCard = ({ item }: { item: StatCard }) => (
-    <View className="flex-1 rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] p-4">
+    <View className="flex-1 rounded-2xl border border-[#0f3a2e] bg-[#071f1a] p-4">
       <View className="mb-2">{item.icon}</View>
-      <Text className="text-2xl font-bold text-[#E8E0F0]">{item.value}</Text>
-      <Text className="text-xs text-[#9B8AB8]">{item.label}</Text>
+      <Text className="text-2xl font-bold text-[#e0f0eb]">{item.value}</Text>
+      <Text className="text-xs text-[#6b9b8a]">{item.label}</Text>
     </View>
   );
 
@@ -120,13 +120,13 @@ export default function ProfileScreen() {
         <View className="flex-row items-center px-4 py-3">
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#1A0E2E]"
+            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#071f1a]"
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ChevronLeft size={20} color="#E8E0F0" />
+            <ChevronLeft size={20} color="#e0f0eb" />
           </Pressable>
-          <Text className="text-2xl font-bold text-[#E8E0F0]">Profile</Text>
+          <Text className="text-2xl font-bold text-[#e0f0eb]">Profile</Text>
         </View>
 
         <FlatList
@@ -137,7 +137,7 @@ export default function ProfileScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#c03484"
+              tintColor="#10b981"
             />
           }
           ListHeaderComponent={
@@ -149,11 +149,11 @@ export default function ProfileScreen() {
                   image={session?.user.image}
                   size={80}
                 />
-                <Text className="mt-3 text-xl font-bold text-[#E8E0F0]">
+                <Text className="mt-3 text-xl font-bold text-[#e0f0eb]">
                   {session?.user.name ?? "User"}
                 </Text>
                 {profile && (
-                  <Text className="mt-1 text-sm text-[#9B8AB8]">
+                  <Text className="mt-1 text-sm text-[#6b9b8a]">
                     {profile.roundsParticipated} rounds played
                   </Text>
                 )}
@@ -180,7 +180,7 @@ export default function ProfileScreen() {
               {/* Best Submission */}
               {profile?.bestSubmission && (
                 <View className="mb-6">
-                  <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
+                  <Text className="mb-3 text-lg font-bold text-[#e0f0eb]">
                     Best Submission
                   </Text>
                   <View className="rounded-2xl border border-[#FFD700]/30 bg-[#FFD700]/5 p-4">
@@ -191,24 +191,24 @@ export default function ProfileScreen() {
                           style={{ width: 72, height: 72, borderRadius: 8 }}
                         />
                       ) : (
-                        <View className="h-[72px] w-[72px] items-center justify-center rounded-lg bg-[#1A0E2E]">
-                          <Music size={28} color="#9B8AB8" />
+                        <View className="h-[72px] w-[72px] items-center justify-center rounded-lg bg-[#071f1a]">
+                          <Music size={28} color="#6b9b8a" />
                         </View>
                       )}
                       <View className="flex-1">
                         <Text
-                          className="text-base font-bold text-[#E8E0F0]"
+                          className="text-base font-bold text-[#e0f0eb]"
                           numberOfLines={1}
                         >
                           {profile.bestSubmission.trackName}
                         </Text>
                         <Text
-                          className="text-sm text-[#9B8AB8]"
+                          className="text-sm text-[#6b9b8a]"
                           numberOfLines={1}
                         >
                           {profile.bestSubmission.artistName}
                         </Text>
-                        <Text className="mt-1 text-xs text-[#9B8AB8]">
+                        <Text className="mt-1 text-xs text-[#6b9b8a]">
                           Theme: {profile.bestSubmission.roundTheme}
                         </Text>
                         <View className="mt-2 flex-row items-center gap-1">
@@ -227,43 +227,43 @@ export default function ProfileScreen() {
               <View className="mb-6 gap-3">
                 <Pressable
                   onPress={() => router.push("/settings" as never)}
-                  className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] p-4 active:bg-[#3D1F5C]/60"
+                  className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] p-4 active:bg-[#0f3a2e]/60"
                 >
                   <View className="flex-row items-center gap-3">
-                    <Bell size={20} color="#9B8AB8" />
-                    <Text className="text-base font-medium text-[#E8E0F0]">
+                    <Bell size={20} color="#6b9b8a" />
+                    <Text className="text-base font-medium text-[#e0f0eb]">
                       Notification Settings
                     </Text>
                   </View>
-                  <ChevronRight size={18} color="#9B8AB8" />
+                  <ChevronRight size={18} color="#6b9b8a" />
                 </Pressable>
 
                 <Pressable
                   onPress={() => router.push("/blocked-users" as never)}
-                  className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] p-4 active:bg-[#3D1F5C]/60"
+                  className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] p-4 active:bg-[#0f3a2e]/60"
                 >
                   <View className="flex-row items-center gap-3">
-                    <ShieldAlert size={20} color="#9B8AB8" />
-                    <Text className="text-base font-medium text-[#E8E0F0]">
+                    <ShieldAlert size={20} color="#6b9b8a" />
+                    <Text className="text-base font-medium text-[#e0f0eb]">
                       Blocked Users
                     </Text>
                   </View>
-                  <ChevronRight size={18} color="#9B8AB8" />
+                  <ChevronRight size={18} color="#6b9b8a" />
                 </Pressable>
 
                 <Pressable
                   onPress={() =>
                     Linking.openURL("mailto:support@chumbaleague.app")
                   }
-                  className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] p-4 active:bg-[#3D1F5C]/60"
+                  className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#071f1a] p-4 active:bg-[#0f3a2e]/60"
                 >
                   <View className="flex-row items-center gap-3">
-                    <HelpCircle size={20} color="#9B8AB8" />
-                    <Text className="text-base font-medium text-[#E8E0F0]">
+                    <HelpCircle size={20} color="#6b9b8a" />
+                    <Text className="text-base font-medium text-[#e0f0eb]">
                       Contact Support
                     </Text>
                   </View>
-                  <ChevronRight size={18} color="#9B8AB8" />
+                  <ChevronRight size={18} color="#6b9b8a" />
                 </Pressable>
               </View>
 

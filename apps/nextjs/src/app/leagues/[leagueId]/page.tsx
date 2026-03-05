@@ -64,8 +64,8 @@ import { Textarea } from "@acme/ui/textarea";
 
 import { authClient } from "~/auth/client";
 import { AppShell } from "~/components/app-shell";
-import { NumberStepper } from "~/components/number-stepper";
 import { LeagueStandings } from "~/components/music/results/league-standings";
+import { NumberStepper } from "~/components/number-stepper";
 import { useTRPC } from "~/trpc/react";
 
 const roleLabels: Record<string, string> = {
@@ -188,7 +188,7 @@ export default function LeagueDetailPage() {
               <Users className="text-muted-foreground h-6 w-6" />
             </div>
             <div>
-              <p className="font-medium text-muted-foreground">
+              <p className="text-muted-foreground font-medium">
                 League not found
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
@@ -197,7 +197,7 @@ export default function LeagueDetailPage() {
             </div>
             <Link
               href="/"
-              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
+              className="text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300"
             >
               Back to Dashboard
             </Link>
@@ -299,9 +299,7 @@ export default function LeagueDetailPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() =>
-                    regenerateCode.mutate({ leagueId: league.id })
-                  }
+                  onClick={() => regenerateCode.mutate({ leagueId: league.id })}
                   disabled={!isOwner || regenerateCode.isPending}
                 >
                   Regenerate
@@ -338,8 +336,9 @@ export default function LeagueDetailPage() {
                       }
                       disabled={startLeague.isPending}
                     >
-                      {startLeague.isPending
-                        ? "Starting..." : (
+                      {startLeague.isPending ? (
+                        "Starting..."
+                      ) : (
                         <>
                           <Play className="h-4 w-4" />
                           Start League
@@ -369,7 +368,12 @@ export default function LeagueDetailPage() {
                 {league.rounds.length > 0 ? (
                   <div className="space-y-2">
                     {(() => {
-                      const activeStatuses = ["SUBMISSION", "LISTENING", "VOTING", "RESULTS"];
+                      const activeStatuses = [
+                        "SUBMISSION",
+                        "LISTENING",
+                        "VOTING",
+                        "RESULTS",
+                      ];
                       const activeRound = league.rounds.find((r) =>
                         activeStatuses.includes(r.status),
                       );
@@ -394,7 +398,8 @@ export default function LeagueDetailPage() {
                             >
                               <div className="min-w-0 flex-1">
                                 <p className="font-medium">
-                                  Round {currentRound.roundNumber}: {currentRound.themeName}
+                                  Round {currentRound.roundNumber}:{" "}
+                                  {currentRound.themeName}
                                 </p>
                                 {currentRound.themeDescription && (
                                   <p className="text-muted-foreground mt-0.5 text-sm">
@@ -403,7 +408,9 @@ export default function LeagueDetailPage() {
                                 )}
                               </div>
                               <Badge variant="secondary">
-                                {currentRound.status === "PENDING" ? "Up Next" : currentRound.status}
+                                {currentRound.status === "PENDING"
+                                  ? "Up Next"
+                                  : currentRound.status}
                               </Badge>
                             </Link>
                           )}
@@ -440,7 +447,8 @@ export default function LeagueDetailPage() {
                                   {winner && (
                                     <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
                                       <Trophy className="h-3 w-3 text-yellow-500" />
-                                      {winner.userName} &middot; {winner.trackName}
+                                      {winner.userName} &middot;{" "}
+                                      {winner.trackName}
                                     </p>
                                   )}
                                 </div>
@@ -488,19 +496,15 @@ export default function LeagueDetailPage() {
               <CardContent>
                 <div className="space-y-3">
                   {league.members
-                    .filter(
-                      (member) => !blockedUserIds.includes(member.userId),
-                    )
+                    .filter((member) => !blockedUserIds.includes(member.userId))
                     .map((member) => (
                       <div
                         key={member.id}
                         className="group flex items-center gap-3"
                       >
                         <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={member.user.image ?? undefined}
-                          />
-                          <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-sm font-bold">
+                          <AvatarImage src={member.user.image ?? undefined} />
+                          <AvatarFallback className="bg-emerald-500/20 text-sm font-bold text-emerald-400">
                             {member.user.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -647,9 +651,7 @@ function SettingsModal({
   const [description, setDescription] = useState(league.description ?? "");
   const [songsPerRound, setSongsPerRound] = useState(league.songsPerRound);
   const [allowDownvotes, setAllowDownvotes] = useState(league.allowDownvotes);
-  const [upvotePoints, setUpvotePoints] = useState(
-    league.upvotePointsPerRound,
-  );
+  const [upvotePoints, setUpvotePoints] = useState(league.upvotePointsPerRound);
   const [submissionWindowDays, setSubmissionWindowDays] = useState(
     league.submissionWindowDays,
   );
@@ -841,9 +843,7 @@ function SettingsModal({
                           : String(maxDownvotesPerSong)
                       }
                       onValueChange={(v) =>
-                        setMaxDownvotesPerSong(
-                          v === "none" ? null : Number(v),
-                        )
+                        setMaxDownvotesPerSong(v === "none" ? null : Number(v))
                       }
                     >
                       <SelectTrigger className="w-full">
@@ -851,13 +851,11 @@ function SettingsModal({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">No limit</SelectItem>
-                        {Array.from({ length: 5 }, (_, i) => i + 1).map(
-                          (n) => (
-                            <SelectItem key={n} value={String(n)}>
-                              {n}
-                            </SelectItem>
-                          ),
-                        )}
+                        {Array.from({ length: 5 }, (_, i) => i + 1).map((n) => (
+                          <SelectItem key={n} value={String(n)}>
+                            {n}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -872,9 +870,7 @@ function SettingsModal({
                         : String(maxUpvotesPerSong)
                     }
                     onValueChange={(v) =>
-                      setMaxUpvotesPerSong(
-                        v === "none" ? null : Number(v),
-                      )
+                      setMaxUpvotesPerSong(v === "none" ? null : Number(v))
                     }
                   >
                     <SelectTrigger className="w-full">
@@ -882,13 +878,11 @@ function SettingsModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No limit</SelectItem>
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map(
-                        (n) => (
-                          <SelectItem key={n} value={String(n)}>
-                            {n}
-                          </SelectItem>
-                        ),
-                      )}
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                        <SelectItem key={n} value={String(n)}>
+                          {n}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -923,15 +917,9 @@ function SettingsModal({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="STEADY">
-                        Steady
-                      </SelectItem>
-                      <SelectItem value="ACCELERATED">
-                        Accelerated
-                      </SelectItem>
-                      <SelectItem value="SPEEDY">
-                        Speedy
-                      </SelectItem>
+                      <SelectItem value="STEADY">Steady</SelectItem>
+                      <SelectItem value="ACCELERATED">Accelerated</SelectItem>
+                      <SelectItem value="SPEEDY">Speedy</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-muted-foreground text-xs">

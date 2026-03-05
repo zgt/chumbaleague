@@ -85,13 +85,13 @@ export default function BlockedUsersScreen() {
         <View className="flex-row items-center px-4 py-3">
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#1A0E2E]"
+            className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#071f1a]"
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ChevronLeft size={20} color="#E8E0F0" />
+            <ChevronLeft size={20} color="#e0f0eb" />
           </Pressable>
-          <Text className="text-2xl font-bold text-[#E8E0F0]">
+          <Text className="text-2xl font-bold text-[#e0f0eb]">
             Blocked Users
           </Text>
         </View>
@@ -104,18 +104,18 @@ export default function BlockedUsersScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#c03484"
+              tintColor="#10b981"
             />
           }
           ListEmptyComponent={
             <View className="items-center py-12">
               <ShieldOff
                 size={40}
-                color="#9B8AB8"
+                color="#6b9b8a"
                 style={{ marginBottom: 12 }}
               />
-              <Text className="text-base text-[#9B8AB8]">No blocked users</Text>
-              <Text className="mt-1 text-sm text-[#6B5B7B]">
+              <Text className="text-base text-[#6b9b8a]">No blocked users</Text>
+              <Text className="mt-1 text-sm text-[#4a7a6b]">
                 Users you block will appear here
               </Text>
             </View>
@@ -128,8 +128,8 @@ export default function BlockedUsersScreen() {
                 padding: 14,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: "#3D1F5C",
-                backgroundColor: "#1A0E2E",
+                borderColor: "#0f3a2e",
+                backgroundColor: "#071f1a",
                 marginBottom: 8,
               }}
             >
@@ -140,11 +140,11 @@ export default function BlockedUsersScreen() {
               />
               <View style={{ flex: 1, marginLeft: 12 }}>
                 <Text
-                  style={{ fontSize: 16, fontWeight: "600", color: "#E8E0F0" }}
+                  style={{ fontSize: 16, fontWeight: "600", color: "#e0f0eb" }}
                 >
                   {item.user.name}
                 </Text>
-                <Text style={{ fontSize: 12, color: "#9B8AB8", marginTop: 2 }}>
+                <Text style={{ fontSize: 12, color: "#6b9b8a", marginTop: 2 }}>
                   Blocked {new Date(item.createdAt).toLocaleDateString()}
                 </Text>
               </View>

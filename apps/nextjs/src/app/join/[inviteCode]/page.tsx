@@ -102,9 +102,7 @@ export default function JoinLeaguePage() {
             )}
 
             {isAlreadyMember ? (
-              <Button
-                onClick={() => router.push(`/leagues/${league.id}`)}
-              >
+              <Button onClick={() => router.push(`/leagues/${league.id}`)}>
                 Go to League
               </Button>
             ) : (

@@ -111,7 +111,7 @@ export function LeagueStandings({ leagueId }: { leagueId: string }) {
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
                           <AvatarImage src={entry.user.image ?? undefined} />
-                          <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-xs font-bold">
+                          <AvatarFallback className="bg-emerald-500/20 text-xs font-bold text-emerald-400">
                             {entry.user.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>

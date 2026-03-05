@@ -69,27 +69,27 @@ function SettingsStepper({
   label: string;
 }) {
   return (
-    <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
-      <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+    <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 py-3">
+      <Text className="text-base font-medium text-[#e0f0eb]">{label}</Text>
       <View className="flex-row items-center gap-3">
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
-          className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+          className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
           style={value <= min ? { opacity: 0.4 } : undefined}
         >
-          <ChevronDown size={20} color="#E8E0F0" />
+          <ChevronDown size={20} color="#e0f0eb" />
         </Pressable>
-        <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+        <Text className="w-8 text-center text-lg font-bold text-[#10b981]">
           {value}
         </Text>
         <Pressable
           onPress={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+          className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
           style={value >= max ? { opacity: 0.4 } : undefined}
         >
-          <ChevronUp size={20} color="#E8E0F0" />
+          <ChevronUp size={20} color="#e0f0eb" />
         </Pressable>
       </View>
     </View>
@@ -113,20 +113,20 @@ function NullableStepper({
 }) {
   const isLimited = value !== null;
   return (
-    <View className="rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
+    <View className="rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 py-3">
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-medium text-[#E8E0F0]">{label}</Text>
+        <Text className="text-base font-medium text-[#e0f0eb]">{label}</Text>
         <Pressable
           onPress={() => onChange(isLimited ? null : min)}
           className={`rounded-full px-3 py-1 ${
             isLimited
-              ? "border border-[#c03484] bg-[#c03484]/20"
-              : "border border-[#3D1F5C] bg-[#3D1F5C]"
+              ? "border border-[#10b981] bg-[#10b981]/20"
+              : "border border-[#0f3a2e] bg-[#0f3a2e]"
           }`}
         >
           <Text
             className={`text-xs font-medium ${
-              isLimited ? "text-[#c03484]" : "text-[#9B8AB8]"
+              isLimited ? "text-[#10b981]" : "text-[#6b9b8a]"
             }`}
           >
             {isLimited ? "Limited" : nullLabel}
@@ -138,21 +138,21 @@ function NullableStepper({
           <Pressable
             onPress={() => onChange(Math.max(min, value - 1))}
             disabled={value <= min}
-            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
             style={value <= min ? { opacity: 0.4 } : undefined}
           >
-            <ChevronDown size={20} color="#E8E0F0" />
+            <ChevronDown size={20} color="#e0f0eb" />
           </Pressable>
-          <Text className="w-8 text-center text-lg font-bold text-[#c03484]">
+          <Text className="w-8 text-center text-lg font-bold text-[#10b981]">
             {value}
           </Text>
           <Pressable
             onPress={() => onChange(Math.min(max, value + 1))}
             disabled={value >= max}
-            className="h-9 w-9 items-center justify-center rounded-lg bg-[#3D1F5C] active:bg-[#4D2F6C]"
+            className="h-9 w-9 items-center justify-center rounded-lg bg-[#0f3a2e] active:bg-[#1a4d3e]"
             style={value >= max ? { opacity: 0.4 } : undefined}
           >
-            <ChevronUp size={20} color="#E8E0F0" />
+            <ChevronUp size={20} color="#e0f0eb" />
           </Pressable>
         </View>
       )}
@@ -206,7 +206,7 @@ function DeleteConfirmModal({
       onRequestClose={onCancel}
     >
       <View className="flex-1 items-center justify-center bg-black/60 px-6">
-        <View className="w-full max-w-sm rounded-2xl border border-[#3D1F5C] bg-[#1A0E2E] p-6">
+        <View className="w-full max-w-sm rounded-2xl border border-[#0f3a2e] bg-[#071f1a] p-6">
           {/* Warning Icon */}
           <View className="mb-4 items-center">
             <View className="h-14 w-14 items-center justify-center rounded-full bg-red-500/15">
@@ -215,18 +215,18 @@ function DeleteConfirmModal({
           </View>
 
           {/* Title */}
-          <Text className="mb-2 text-center text-lg font-bold text-[#E8E0F0]">
+          <Text className="mb-2 text-center text-lg font-bold text-[#e0f0eb]">
             Delete League
           </Text>
 
           {/* Description */}
-          <Text className="mb-1 text-center text-sm text-[#9B8AB8]">
+          <Text className="mb-1 text-center text-sm text-[#6b9b8a]">
             Are you sure you want to delete
           </Text>
-          <Text className="mb-3 text-center text-base font-semibold text-[#c03484]">
+          <Text className="mb-3 text-center text-base font-semibold text-[#10b981]">
             {leagueName}
           </Text>
-          <Text className="mb-6 text-center text-sm text-[#9B8AB8]">
+          <Text className="mb-6 text-center text-sm text-[#6b9b8a]">
             This will permanently delete all rounds, submissions, and votes.
             This action cannot be undone.
           </Text>
@@ -263,12 +263,12 @@ function DeleteConfirmModal({
                 alignItems: "center",
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: "#3D1F5C",
+                borderColor: "#0f3a2e",
                 paddingVertical: 14,
               }}
             >
               <Text
-                style={{ fontSize: 16, fontWeight: "500", color: "#E8E0F0" }}
+                style={{ fontSize: 16, fontWeight: "500", color: "#e0f0eb" }}
               >
                 Cancel
               </Text>
@@ -435,28 +435,28 @@ export const LeagueSettingsSheet = forwardRef<
           ref={bottomSheetRef}
           snapPoints={snapPoints}
           backdropComponent={renderBackdrop}
-          backgroundStyle={{ backgroundColor: "#1A0E2E" }}
-          handleIndicatorStyle={{ backgroundColor: "#9B8AB8" }}
+          backgroundStyle={{ backgroundColor: "#071f1a" }}
+          handleIndicatorStyle={{ backgroundColor: "#6b9b8a" }}
         >
           <BottomSheetScrollView
             contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
           >
-            <Text className="mb-6 text-xl font-bold text-[#E8E0F0]">
+            <Text className="mb-6 text-xl font-bold text-[#e0f0eb]">
               League Settings
             </Text>
 
             {/* Name */}
             <View className="mb-4">
-              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+              <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                 League Name
               </Text>
               <TextInput
                 value={editName}
                 onChangeText={setEditName}
                 placeholder="League name"
-                placeholderTextColor="#9B8AB8"
+                placeholderTextColor="#6b9b8a"
                 maxLength={100}
-                className="rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 text-[#E8E0F0]"
+                className="rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 text-[#e0f0eb]"
                 style={{
                   fontSize: 16,
                   height: 48,
@@ -467,18 +467,18 @@ export const LeagueSettingsSheet = forwardRef<
 
             {/* Description */}
             <View className="mb-6">
-              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+              <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                 Description
               </Text>
               <TextInput
                 value={editDescription}
                 onChangeText={setEditDescription}
                 placeholder="What's this league about?"
-                placeholderTextColor="#9B8AB8"
+                placeholderTextColor="#6b9b8a"
                 maxLength={500}
                 multiline
                 numberOfLines={3}
-                className="rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 text-[#E8E0F0]"
+                className="rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 text-[#e0f0eb]"
                 style={{
                   fontSize: 16,
                   minHeight: 80,
@@ -489,13 +489,13 @@ export const LeagueSettingsSheet = forwardRef<
             </View>
 
             {/* Round Windows */}
-            <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
+            <Text className="mb-3 text-lg font-bold text-[#e0f0eb]">
               Round Windows
             </Text>
 
             {/* Submission Window Presets */}
             <View className="mb-4">
-              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+              <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                 Submission window
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -505,15 +505,15 @@ export const LeagueSettingsSheet = forwardRef<
                     onPress={() => setEditSubmissionWindowDays(preset.days)}
                     className={`rounded-full px-4 py-2 ${
                       editSubmissionWindowDays === preset.days
-                        ? "border border-[#c03484] bg-[#c03484]/20"
-                        : "border border-[#3D1F5C] bg-[#0A0A14]"
+                        ? "border border-[#10b981] bg-[#10b981]/20"
+                        : "border border-[#0f3a2e] bg-[#020a0a]"
                     }`}
                   >
                     <Text
                       className={`text-sm font-medium ${
                         editSubmissionWindowDays === preset.days
-                          ? "text-[#c03484]"
-                          : "text-[#9B8AB8]"
+                          ? "text-[#10b981]"
+                          : "text-[#6b9b8a]"
                       }`}
                     >
                       {preset.label}
@@ -525,7 +525,7 @@ export const LeagueSettingsSheet = forwardRef<
 
             {/* Voting Window Presets */}
             <View className="mb-4">
-              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+              <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                 Voting window (after submissions close)
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -535,15 +535,15 @@ export const LeagueSettingsSheet = forwardRef<
                     onPress={() => setEditVotingWindowDays(preset.days)}
                     className={`rounded-full px-4 py-2 ${
                       editVotingWindowDays === preset.days
-                        ? "border border-[#c03484] bg-[#c03484]/20"
-                        : "border border-[#3D1F5C] bg-[#0A0A14]"
+                        ? "border border-[#10b981] bg-[#10b981]/20"
+                        : "border border-[#0f3a2e] bg-[#020a0a]"
                     }`}
                   >
                     <Text
                       className={`text-sm font-medium ${
                         editVotingWindowDays === preset.days
-                          ? "text-[#c03484]"
-                          : "text-[#9B8AB8]"
+                          ? "text-[#10b981]"
+                          : "text-[#6b9b8a]"
                       }`}
                     >
                       {preset.label}
@@ -555,7 +555,7 @@ export const LeagueSettingsSheet = forwardRef<
 
             {/* Deadline Behavior */}
             <View className="mb-6">
-              <Text className="mb-2 text-sm font-medium text-[#9B8AB8]">
+              <Text className="mb-2 text-sm font-medium text-[#6b9b8a]">
                 Deadline behavior
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -565,15 +565,15 @@ export const LeagueSettingsSheet = forwardRef<
                     onPress={() => setEditDeadlineBehavior(preset.value)}
                     className={`rounded-full px-4 py-2 ${
                       editDeadlineBehavior === preset.value
-                        ? "border border-[#c03484] bg-[#c03484]/20"
-                        : "border border-[#3D1F5C] bg-[#0A0A14]"
+                        ? "border border-[#10b981] bg-[#10b981]/20"
+                        : "border border-[#0f3a2e] bg-[#020a0a]"
                     }`}
                   >
                     <Text
                       className={`text-sm font-medium ${
                         editDeadlineBehavior === preset.value
-                          ? "text-[#c03484]"
-                          : "text-[#9B8AB8]"
+                          ? "text-[#10b981]"
+                          : "text-[#6b9b8a]"
                       }`}
                     >
                       {preset.label}
@@ -581,7 +581,7 @@ export const LeagueSettingsSheet = forwardRef<
                   </Pressable>
                 ))}
               </View>
-              <Text className="mt-1.5 text-xs text-[#9B8AB8]">
+              <Text className="mt-1.5 text-xs text-[#6b9b8a]">
                 {
                   DEADLINE_BEHAVIORS.find(
                     (b) => b.value === editDeadlineBehavior,
@@ -591,7 +591,7 @@ export const LeagueSettingsSheet = forwardRef<
             </View>
 
             {/* Settings */}
-            <Text className="mb-3 text-lg font-bold text-[#E8E0F0]">
+            <Text className="mb-3 text-lg font-bold text-[#e0f0eb]">
               Settings
             </Text>
 
@@ -628,20 +628,20 @@ export const LeagueSettingsSheet = forwardRef<
                 max={10}
               />
 
-              <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
+              <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 py-3">
                 <View className="flex-1">
-                  <Text className="text-base font-medium text-[#E8E0F0]">
+                  <Text className="text-base font-medium text-[#e0f0eb]">
                     Allow downvotes
                   </Text>
-                  <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                  <Text className="mt-0.5 text-xs text-[#6b9b8a]">
                     Members can spend points to downvote songs
                   </Text>
                 </View>
                 <Switch
                   value={editAllowDownvotes}
                   onValueChange={setEditAllowDownvotes}
-                  trackColor={{ false: "#3D1F5C", true: "#c03484" }}
-                  thumbColor={editAllowDownvotes ? "#0A0A14" : "#9B8AB8"}
+                  trackColor={{ false: "#0f3a2e", true: "#10b981" }}
+                  thumbColor={editAllowDownvotes ? "#020a0a" : "#6b9b8a"}
                 />
               </View>
 
@@ -665,20 +665,20 @@ export const LeagueSettingsSheet = forwardRef<
               )}
 
               {/* Voting Penalty Toggle */}
-              <View className="flex-row items-center justify-between rounded-2xl border border-[#3D1F5C] bg-[#0A0A14] px-4 py-3">
+              <View className="flex-row items-center justify-between rounded-2xl border border-[#0f3a2e] bg-[#020a0a] px-4 py-3">
                 <View className="flex-1">
-                  <Text className="text-base font-medium text-[#E8E0F0]">
+                  <Text className="text-base font-medium text-[#e0f0eb]">
                     Voting penalty
                   </Text>
-                  <Text className="mt-0.5 text-xs text-[#9B8AB8]">
+                  <Text className="mt-0.5 text-xs text-[#6b9b8a]">
                     Penalize members who don't vote
                   </Text>
                 </View>
                 <Switch
                   value={editVotingPenalty}
                   onValueChange={setEditVotingPenalty}
-                  trackColor={{ false: "#3D1F5C", true: "#c03484" }}
-                  thumbColor={editVotingPenalty ? "#0A0A14" : "#9B8AB8"}
+                  trackColor={{ false: "#0f3a2e", true: "#10b981" }}
+                  thumbColor={editVotingPenalty ? "#020a0a" : "#6b9b8a"}
                 />
               </View>
             </View>
@@ -690,7 +690,7 @@ export const LeagueSettingsSheet = forwardRef<
               style={{
                 alignItems: "center",
                 borderRadius: 16,
-                backgroundColor: "#c03484",
+                backgroundColor: "#10b981",
                 paddingVertical: 16,
                 opacity: updateMutation.isPending || !editName.trim() ? 0.5 : 1,
               }}

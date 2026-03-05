@@ -8,8 +8,7 @@ import {
 } from "react-native-reanimated";
 import { Canvas, Fill, Shader, Skia } from "@shopify/react-native-skia";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } =
-  Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- static shader source is always valid
 const source = Skia.RuntimeEffect.Make(`
@@ -46,10 +45,10 @@ const source = Skia.RuntimeEffect.Make(`
       ripple = sharpWave * decay * rippleIntensity * waveMask;
     }
 
-    // Dark purple/magenta theme
+    // Dark emerald green theme
     float dotMask = dot * dotOpacity * (1.0 + ripple * 20.0);
-    half3 bg = half3(0.06, 0.04, 0.10);
-    half3 dotColor = half3(0.20, 0.08, 0.25);
+    half3 bg = half3(0.01, 0.04, 0.04);
+    half3 dotColor = half3(0.06, 0.30, 0.20);
     half3 color = mix(bg, dotColor, half(dotMask));
     return half4(color, 1.0);
   }

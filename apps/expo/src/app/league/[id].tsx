@@ -188,7 +188,8 @@ export default function LeagueDetails() {
     );
   }, [league?.rounds]);
 
-  const showStartBanner = isOwner && (league?.rounds.length ?? 0) > 0 && allRoundsPending;
+  const showStartBanner =
+    isOwner && (league?.rounds.length ?? 0) > 0 && allRoundsPending;
 
   const handleShareInvite = async () => {
     if (!league) return;
@@ -265,7 +266,7 @@ export default function LeagueDetails() {
       case "PENDING":
         return { bg: "rgba(107, 114, 128, 0.15)", text: "#6B7280" };
       case "SUBMISSION":
-        return { bg: "rgba(192, 52, 132, 0.2)", text: "#c03484" };
+        return { bg: "rgba(16, 185, 129, 0.2)", text: "#10b981" };
       case "VOTING":
         return { bg: "rgba(234, 179, 8, 0.2)", text: "#EAB308" };
       case "RESULTS":
@@ -273,7 +274,7 @@ export default function LeagueDetails() {
       case "COMPLETED":
         return { bg: "rgba(34, 197, 94, 0.15)", text: "#22C55E" };
       default:
-        return { bg: "rgba(155, 138, 184, 0.15)", text: "#9B8AB8" };
+        return { bg: "rgba(107, 155, 138, 0.15)", text: "#6b9b8a" };
     }
   };
 
@@ -292,8 +293,8 @@ export default function LeagueDetails() {
             {
               borderRadius: 16,
               borderWidth: 1,
-              borderColor: isPending ? "#2A1540" : "#3D1F5C",
-              backgroundColor: "#1A0E2E",
+              borderColor: isPending ? "#0a2a20" : "#0f3a2e",
+              backgroundColor: "#071f1a",
               padding: 16,
               marginBottom: 8,
             },
@@ -315,7 +316,7 @@ export default function LeagueDetails() {
                   textTransform: "uppercase",
                   letterSpacing: 0.5,
                   marginBottom: 6,
-                  color: isPending ? "#6B7280" : "#c03484",
+                  color: isPending ? "#6B7280" : "#10b981",
                 }}
               >
                 Round {item.roundNumber}
@@ -325,7 +326,7 @@ export default function LeagueDetails() {
                   fontSize: 18,
                   fontWeight: "600",
                   marginBottom: 4,
-                  color: isPending ? "#6B7280" : "#E8E0F0",
+                  color: isPending ? "#6B7280" : "#e0f0eb",
                 }}
               >
                 {item.themeName}
@@ -335,7 +336,7 @@ export default function LeagueDetails() {
                   style={{
                     fontSize: 14,
                     lineHeight: 20,
-                    color: isPending ? "#4B5563" : "#9B8AB8",
+                    color: isPending ? "#4B5563" : "#6b9b8a",
                   }}
                   numberOfLines={2}
                 >
@@ -353,12 +354,16 @@ export default function LeagueDetails() {
                 >
                   <Trophy size={14} color="#EAB308" />
                   <Text
-                    style={{ fontSize: 13, color: "#EAB308", fontWeight: "600" }}
+                    style={{
+                      fontSize: 13,
+                      color: "#EAB308",
+                      fontWeight: "600",
+                    }}
                   >
                     {winner.userName}
                   </Text>
                   <Text
-                    style={{ fontSize: 13, color: "#9B8AB8" }}
+                    style={{ fontSize: 13, color: "#6b9b8a" }}
                     numberOfLines={1}
                   >
                     — {winner.trackName}
@@ -398,7 +403,7 @@ export default function LeagueDetails() {
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <Stack.Screen options={{ headerShown: false }} />
-          <ActivityIndicator size="large" color="#c03484" />
+          <ActivityIndicator size="large" color="#10b981" />
         </SafeAreaView>
       </GradientBackground>
     );
@@ -414,14 +419,14 @@ export default function LeagueDetails() {
           <View className="flex-row items-center justify-between">
             <Pressable
               onPress={() => router.back()}
-              className="rounded-full bg-[#3D1F5C] p-2"
+              className="rounded-full bg-[#0f3a2e] p-2"
               accessibilityLabel="Go back"
               accessibilityRole="button"
             >
-              <ArrowLeft color="#E8E0F0" size={24} />
+              <ArrowLeft color="#e0f0eb" size={24} />
             </Pressable>
             <Text
-              className="flex-1 text-center text-xl font-bold text-[#E8E0F0]"
+              className="flex-1 text-center text-xl font-bold text-[#e0f0eb]"
               numberOfLines={1}
             >
               {league.name}
@@ -430,18 +435,18 @@ export default function LeagueDetails() {
               {isAdmin && (
                 <Pressable
                   onPress={() => settingsSheetRef.current?.present()}
-                  className="rounded-full bg-[#3D1F5C] p-2"
+                  className="rounded-full bg-[#0f3a2e] p-2"
                   accessibilityLabel="League settings"
                   accessibilityRole="button"
                 >
-                  <Settings color="#E8E0F0" size={20} />
+                  <Settings color="#e0f0eb" size={20} />
                 </Pressable>
               )}
               {!isAdmin && <View className="w-10" />}
             </View>
           </View>
           {league.description ? (
-            <Text className="mt-1 text-center text-sm text-[#9B8AB8]">
+            <Text className="mt-1 text-center text-sm text-[#6b9b8a]">
               {league.description}
             </Text>
           ) : null}
@@ -456,7 +461,7 @@ export default function LeagueDetails() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#c03484"
+              tintColor="#10b981"
             />
           }
           ListHeaderComponent={
@@ -500,37 +505,37 @@ export default function LeagueDetails() {
               )}
 
               {/* Invite Code Card */}
-              <View className="mb-4 rounded-2xl border border-[#c03484]/20 bg-[#1A0E2E] p-4">
+              <View className="mb-4 rounded-2xl border border-[#10b981]/20 bg-[#071f1a] p-4">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="mb-1 text-xs font-semibold tracking-wider text-[#9B8AB8] uppercase">
+                    <Text className="mb-1 text-xs font-semibold tracking-wider text-[#6b9b8a] uppercase">
                       Invite Code
                     </Text>
                     <Text
-                      className="text-2xl font-bold tracking-widest text-[#c03484]"
+                      className="text-2xl font-bold tracking-widest text-[#10b981]"
                       style={{ fontFamily: "monospace" }}
                       selectable
                     >
                       {league.inviteCode}
                     </Text>
-                    <Text className="mt-1.5 text-xs text-[#9B8AB8]">
+                    <Text className="mt-1.5 text-xs text-[#6b9b8a]">
                       {league.members.length} members
                     </Text>
                   </View>
                   <View className="flex-row gap-2">
                     <Pressable
                       onPress={handleShareInvite}
-                      className="h-10 w-10 items-center justify-center rounded-full bg-[#3D1F5C] active:bg-[#4D2F6C]"
+                      className="h-10 w-10 items-center justify-center rounded-full bg-[#0f3a2e] active:bg-[#1a4d3e]"
                       accessibilityLabel="Share invite code"
                       accessibilityRole="button"
                     >
-                      <Share2 size={18} color="#E8E0F0" />
+                      <Share2 size={18} color="#e0f0eb" />
                     </Pressable>
                     {isAdmin && (
                       <Pressable
                         onPress={handleRegenerateCode}
                         disabled={regenerateInviteCodeMutation.isPending}
-                        className="h-10 w-10 items-center justify-center rounded-full bg-[#3D1F5C] active:bg-[#4D2F6C]"
+                        className="h-10 w-10 items-center justify-center rounded-full bg-[#0f3a2e] active:bg-[#1a4d3e]"
                         accessibilityLabel="Regenerate invite code"
                         accessibilityRole="button"
                         style={
@@ -539,7 +544,7 @@ export default function LeagueDetails() {
                             : undefined
                         }
                       >
-                        <RefreshCw size={18} color="#E8E0F0" />
+                        <RefreshCw size={18} color="#e0f0eb" />
                       </Pressable>
                     )}
                   </View>
@@ -552,7 +557,7 @@ export default function LeagueDetails() {
                   onPress={() =>
                     router.push(`/round/create?leagueId=${id}` as never)
                   }
-                  className="mb-4 flex-row items-center justify-center gap-2 rounded-2xl bg-[#c03484] py-3 active:bg-[#d04494]"
+                  className="mb-4 flex-row items-center justify-center gap-2 rounded-2xl bg-[#10b981] py-3 active:bg-[#34d399]"
                   accessibilityLabel="Create round"
                   accessibilityRole="button"
                 >
@@ -567,8 +572,8 @@ export default function LeagueDetails() {
               {standings && standings.length > 0 && (
                 <View className="mb-6">
                   <View className="mb-3 flex-row items-center gap-2">
-                    <Trophy size={18} color="#c03484" />
-                    <Text className="text-xl font-bold text-[#E8E0F0]">
+                    <Trophy size={18} color="#10b981" />
+                    <Text className="text-xl font-bold text-[#e0f0eb]">
                       Standings
                     </Text>
                   </View>
@@ -581,14 +586,12 @@ export default function LeagueDetails() {
 
               {/* Rounds Header */}
               <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-[#E8E0F0]">
-                  Rounds
-                </Text>
+                <Text className="text-xl font-bold text-[#e0f0eb]">Rounds</Text>
               </View>
 
               {league.rounds.length === 0 && (
                 <View className="items-center py-8">
-                  <Text className="text-[#9B8AB8] italic">
+                  <Text className="text-[#6b9b8a] italic">
                     No rounds started yet
                   </Text>
                 </View>
@@ -598,7 +601,7 @@ export default function LeagueDetails() {
           ListFooterComponent={
             <View>
               {/* Members */}
-              <Text className="mt-8 mb-4 text-xl font-bold text-[#E8E0F0]">
+              <Text className="mt-8 mb-4 text-xl font-bold text-[#e0f0eb]">
                 Members
               </Text>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -621,11 +624,11 @@ export default function LeagueDetails() {
                         ...(member.userId === currentUserId
                           ? {
                               borderWidth: 1,
-                              borderColor: "rgba(192, 52, 132, 0.4)",
-                              backgroundColor: "rgba(192, 52, 132, 0.2)",
+                              borderColor: "rgba(16, 185, 129, 0.4)",
+                              backgroundColor: "rgba(16, 185, 129, 0.2)",
                             }
                           : {
-                              backgroundColor: "#3D1F5C",
+                              backgroundColor: "#0f3a2e",
                             }),
                       }}
                     >
@@ -635,8 +638,8 @@ export default function LeagueDetails() {
                           fontWeight: "500",
                           color:
                             member.userId === currentUserId
-                              ? "#c03484"
-                              : "#E8E0F0",
+                              ? "#10b981"
+                              : "#e0f0eb",
                         }}
                       >
                         {member.user.name ?? "Unknown"}

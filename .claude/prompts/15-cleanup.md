@@ -11,6 +11,7 @@ Remove scaffold code, set up environment, and prepare for deployment.
 - Delete `apps/nextjs/src/app/_components/posts.tsx`
 - Remove any references to the `Post` table from `packages/db/src/schema.ts` (if not already done in step 2)
 - Clean up the `apps/nextjs/src/app/_components/auth-showcase.tsx` if it's scaffold demo code
+- Some screens were mistakenly added with a purple theme to the expo app and maybe Next.js. Make sure that all screens and components use the consitent dark emerald green color scheme from the nextjs app.
 
 ### 2. Environment variables
 

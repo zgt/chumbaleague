@@ -253,7 +253,11 @@ export default function RoundDetails() {
                   <Clock size={18} color="#6B7280" />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text
-                      style={{ fontSize: 14, fontWeight: "600", color: "#8FA8A8" }}
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: "#8FA8A8",
+                      }}
                     >
                       Waiting for previous round to finish
                     </Text>
@@ -1757,9 +1761,7 @@ function AdminControls({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: saveSuccess
-                ? "rgba(80,200,120,0.2)"
-                : "#1A3A3A",
+              backgroundColor: saveSuccess ? "rgba(80,200,120,0.2)" : "#1A3A3A",
               borderRadius: 8,
               paddingVertical: 10,
               gap: 6,

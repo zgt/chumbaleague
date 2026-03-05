@@ -1,7 +1,7 @@
 "use client";
 
 import type { ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { shaderMaterial, useTrailTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
@@ -137,12 +137,7 @@ function Scene() {
     },
   });
 
-  const dotMaterial = useMemo(() => {
-    return new DotMaterial({
-      transparent: true,
-      depthWrite: false,
-    });
-  }, []) as unknown as THREE.ShaderMaterial & {
+  type DotShaderMaterial = THREE.ShaderMaterial & {
     uniforms: {
       time: { value: number };
       resolution: { value: THREE.Vector2 };
@@ -159,18 +154,24 @@ function Scene() {
     };
   };
 
-  useEffect(() => {
-    dotMaterial.uniforms.dotColor.value.setHex(0x4ade80);
-    dotMaterial.uniforms.bgColor.value.setHex(0x000000);
-    dotMaterial.uniforms.dotOpacity.value = 0.3;
-    dotMaterial.transparent = true;
-    dotMaterial.needsUpdate = true;
-  }, [dotMaterial]);
+  const [dotMaterial] = useState(() => {
+    const mat = new DotMaterial({
+      transparent: true,
+      depthWrite: false,
+    }) as unknown as DotShaderMaterial;
+    mat.uniforms.dotColor.value.setHex(0x4ade80);
+    mat.uniforms.bgColor.value.setHex(0x000000);
+    mat.uniforms.dotOpacity.value = 0.3;
+    mat.transparent = true;
+    mat.needsUpdate = true;
+    return mat;
+  });
 
   const manualRippleTimeRemaining = useRef(0);
   const prevIsMutating = useRef(0);
   const prevIsFetching = useRef(0);
 
+  /* eslint-disable react-hooks/immutability -- three.js shader uniforms must be mutated in animation frames */
   useFrame((state, delta) => {
     dotMaterial.uniforms.time.value = state.clock.elapsedTime;
 
@@ -215,6 +216,7 @@ function Scene() {
       dotMaterial.uniforms.rippleTime.value = 0;
     }
   });
+  /* eslint-enable react-hooks/immutability */
 
   useEffect(() => {
     const handleTriggerRipple = () => {

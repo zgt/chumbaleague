@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { eq } from "@acme/db";
-import { db } from "@acme/db/client";
-import { Round } from "@acme/db/schema";
-
 import { sendSubmissionReminders } from "@acme/api/notifications";
 import {
   pushNotifySubmissionReminder,
   pushNotifyVotingReminder,
 } from "@acme/api/push-notifications";
+import { eq } from "@acme/db";
+import { db } from "@acme/db/client";
+import { Round } from "@acme/db/schema";
+
+import { env } from "~/env";
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
@@ -26,7 +27,10 @@ export async function GET(request: Request) {
   });
 
   for (const round of submissionRounds) {
-    if (round.submissionDeadline > now && round.submissionDeadline <= in24Hours) {
+    if (
+      round.submissionDeadline > now &&
+      round.submissionDeadline <= in24Hours
+    ) {
       void sendSubmissionReminders(round.id);
       void pushNotifySubmissionReminder(round.id);
       reminded++;

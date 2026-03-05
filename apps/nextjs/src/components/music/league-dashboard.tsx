@@ -158,11 +158,7 @@ export function LeagueDashboard() {
                   Get an invite code from a league admin
                 </p>
               </div>
-              <Button
-                type="submit"
-                variant="secondary"
-                className="self-start"
-              >
+              <Button type="submit" variant="secondary" className="self-start">
                 Join League
               </Button>
             </form>
@@ -171,9 +167,7 @@ export function LeagueDashboard() {
           {/* Upcoming Deadlines */}
           {deadlines.length > 0 && (
             <div className="glass-card rounded-xl p-5">
-              <h3 className="mb-4 text-lg font-semibold">
-                Upcoming Deadlines
-              </h3>
+              <h3 className="mb-4 text-lg font-semibold">Upcoming Deadlines</h3>
               <div className="space-y-3">
                 {deadlines.map((d) => (
                   <Link
@@ -188,8 +182,8 @@ export function LeagueDashboard() {
                       </p>
                       <p className="text-muted-foreground text-xs">
                         {d.leagueName} &middot;{" "}
-                        {d.status === "SUBMISSION" ? "Submit" : "Vote"}{" "}
-                        &middot; {formatDeadline(d.deadline)}
+                        {d.status === "SUBMISSION" ? "Submit" : "Vote"} &middot;{" "}
+                        {formatDeadline(d.deadline)}
                       </p>
                     </div>
                   </Link>

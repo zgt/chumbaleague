@@ -35,17 +35,17 @@ export function GradientBackground({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0A0A14",
+    backgroundColor: "#020a0a",
   },
   baseGradient: {
-    backgroundColor: "#120A1E",
+    backgroundColor: "#071414",
   },
   auroraTop: {
-    backgroundColor: "rgba(192, 52, 132, 0.06)",
+    backgroundColor: "rgba(16, 185, 129, 0.06)",
     opacity: 0.6,
   },
   auroraBottom: {
-    backgroundColor: "rgba(192, 52, 132, 0.04)",
+    backgroundColor: "rgba(16, 185, 129, 0.04)",
     opacity: 0.4,
   },
 });

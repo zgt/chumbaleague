@@ -51,7 +51,12 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "PORT"
+    "PORT",
+    "SPOTIFY_CLIENT_ID",
+    "SPOTIFY_CLIENT_SECRET",
+    "SPOTIFY_REFRESH_TOKEN",
+    "RESEND_API_KEY",
+    "CRON_SECRET"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

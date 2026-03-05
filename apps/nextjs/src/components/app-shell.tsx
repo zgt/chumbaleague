@@ -1,7 +1,7 @@
 "use client";
 
-import { Nav } from "./nav";
 import { Breadcrumbs } from "./breadcrumbs";
+import { Nav } from "./nav";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
