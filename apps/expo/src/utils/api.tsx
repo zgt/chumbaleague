@@ -47,4 +47,26 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
   queryClient,
 });
 
+/**
+ * Vanilla (non-React) tRPC client for use outside components (e.g. notification handlers).
+ */
+export const vanillaTrpc = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      transformer: superjson,
+      url: `${getBaseUrl()}/api/trpc`,
+      headers() {
+        const headers = new Map<string, string>();
+        headers.set("x-trpc-source", "expo-react");
+
+        const cookies = authClient.getCookie();
+        if (cookies) {
+          headers.set("Cookie", cookies);
+        }
+        return headers;
+      },
+    }),
+  ],
+});
+
 export type { RouterInputs, RouterOutputs } from "@acme/api";

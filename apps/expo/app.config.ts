@@ -20,6 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       light: "./assets/icon-light.png",
       dark: "./assets/icon-dark.png",
     },
+    associatedDomains: ["applinks:music.calayo.net"],
   },
   android: {
     package: "net.calayo.chumbaleague",
@@ -27,6 +28,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/icon-light.png",
       backgroundColor: "#1F104A",
     },
+    intentFilters: [
+      {
+        action: "VIEW",
+        autoVerify: true,
+        data: [
+          {
+            scheme: "https",
+            host: "music.calayo.net",
+            pathPrefix: "/join",
+          },
+        ],
+        category: ["BROWSABLE", "DEFAULT"],
+      },
+    ],
   },
   extra: {
     eas: {
@@ -43,6 +58,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-router",
     "expo-secure-store",
     "expo-web-browser",
+    [
+      "expo-notifications",
+      {
+        icon: "./assets/icon-light.png",
+        color: "#c03484",
+      },
+    ],
     [
       "expo-splash-screen",
       {

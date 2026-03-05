@@ -8,25 +8,15 @@ import { QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthGuard } from "~/components/AuthGuard";
 import { DotBackground } from "~/components/DotBackground";
+import { useNotifications } from "~/hooks/useNotifications";
 import { queryClient } from "~/utils/api";
 import { authClient } from "~/utils/auth";
 
 import "../styles.css";
 
-export default function RootLayout() {
+function AppContent() {
   const colorScheme = useColorScheme();
-  const { data: session, isPending, error } = authClient.useSession();
-
-  if (isPending) {
-    return <DotBackground trigger={1} />;
-  }
-
-  if (error || !session) {
-    if (error) {
-      console.error("[Auth] Session error:", error);
-    }
-    return <AuthGuard />;
-  }
+  useNotifications();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -51,4 +41,21 @@ export default function RootLayout() {
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
+}
+
+export default function RootLayout() {
+  const { data: session, isPending, error } = authClient.useSession();
+
+  if (isPending) {
+    return <DotBackground trigger={1} />;
+  }
+
+  if (error || !session) {
+    if (error) {
+      console.error("[Auth] Session error:", error);
+    }
+    return <AuthGuard />;
+  }
+
+  return <AppContent />;
 }
