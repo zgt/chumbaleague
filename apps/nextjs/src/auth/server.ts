@@ -10,7 +10,7 @@ import { env } from "~/env";
 
 const baseUrl =
   env.VERCEL_ENV === "production"
-    ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+    ? "https://music.calayo.net"
     : env.VERCEL_ENV === "preview"
       ? `https://${env.VERCEL_URL}`
       : (env.AUTH_REDIRECT_PROXY_URL ?? "http://localhost:3000");
@@ -18,8 +18,7 @@ const baseUrl =
 export const auth = initAuth({
   baseUrl,
   productionUrl:
-    env.AUTH_REDIRECT_PROXY_URL ??
-    `https://${env.VERCEL_PROJECT_PRODUCTION_URL ?? "music.calayo.net"}`,
+    env.AUTH_REDIRECT_PROXY_URL ?? "https://music.calayo.net",
   secret: env.AUTH_SECRET,
   discordClientId: env.AUTH_DISCORD_ID,
   discordClientSecret: env.AUTH_DISCORD_SECRET,
