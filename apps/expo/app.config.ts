@@ -55,6 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     reactCompiler: true,
   },
   plugins: [
+    "expo-asset",
     "expo-router",
     "expo-secure-store",
     "expo-web-browser",
