@@ -794,30 +794,28 @@ function SubmissionPhaseSection({
         </View>
       )}
 
-      {/* Submit Button */}
+      {/* Submit / Change Song Button */}
       <Pressable
         onPress={() => router.push(`/round/${roundId}/submit` as never)}
-        disabled={hasMaxSubmissions}
         style={{
-          backgroundColor: hasMaxSubmissions ? "#1A3A3A" : "#50C878",
+          backgroundColor: hasMaxSubmissions ? "#D97706" : "#50C878",
           borderRadius: 12,
           paddingVertical: 16,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
-          opacity: hasMaxSubmissions ? 0.5 : 1,
         }}
       >
-        <Music size={20} color={hasMaxSubmissions ? "#8FA8A8" : "#0A1A1A"} />
+        <Music size={20} color="#0A1A1A" />
         <Text
           style={{
-            color: hasMaxSubmissions ? "#8FA8A8" : "#0A1A1A",
+            color: "#0A1A1A",
             fontSize: 16,
             fontWeight: "700",
             marginLeft: 8,
           }}
         >
-          {hasMaxSubmissions ? "Max Songs Submitted" : "Submit a Song"}
+          {hasMaxSubmissions ? "Change Your Song" : "Submit a Song"}
         </Text>
       </Pressable>
     </View>

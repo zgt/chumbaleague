@@ -94,19 +94,67 @@ export default function SubmitSong() {
     }),
   );
 
+  const deleteMutation = useMutation(
+    trpc.musicLeague.deleteSubmission.mutationOptions(),
+  );
+
+  const [isReplacing, setIsReplacing] = useState(false);
+
+  const submitTrack = (track: SpotifyTrack) => {
+    submitMutation.mutate({
+      roundId,
+      spotifyTrackId: track.spotifyTrackId,
+      trackName: track.trackName,
+      artistName: track.artistName,
+      albumName: track.albumName,
+      albumArtUrl: track.albumArtUrl ?? "",
+      previewUrl: track.previewUrl,
+      trackDurationMs: track.trackDurationMs,
+    });
+  };
+
+  const handleReplace = async (track: SpotifyTrack) => {
+    const mySubmissions =
+      round?.submissions.filter((s: { isOwn: boolean }) => s.isOwn) ?? [];
+    setIsReplacing(true);
+    try {
+      for (const sub of mySubmissions) {
+        await deleteMutation.mutateAsync({
+          submissionId: (sub as { id: string }).id,
+        });
+      }
+      submitTrack(track);
+    } catch {
+      Alert.alert("Error", "Failed to replace submission.");
+    } finally {
+      setIsReplacing(false);
+    }
+  };
+
   const handleSubmit = () => {
     if (!selectedTrack) return;
 
-    submitMutation.mutate({
-      roundId,
-      spotifyTrackId: selectedTrack.spotifyTrackId,
-      trackName: selectedTrack.trackName,
-      artistName: selectedTrack.artistName,
-      albumName: selectedTrack.albumName,
-      albumArtUrl: selectedTrack.albumArtUrl ?? "",
-      previewUrl: selectedTrack.previewUrl,
-      trackDurationMs: selectedTrack.trackDurationMs,
-    });
+    if (remainingSlots <= 0) {
+      const existingNames = round?.submissions
+        .filter((s: { isOwn: boolean }) => s.isOwn)
+        .map((s: { trackName: string }) => `"${s.trackName}"`)
+        .join(", ");
+
+      Alert.alert(
+        "Replace your submission?",
+        `This will replace ${existingNames} with "${selectedTrack.trackName}".`,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Replace",
+            style: "destructive",
+            onPress: () => void handleReplace(selectedTrack),
+          },
+        ],
+      );
+    } else {
+      submitTrack(selectedTrack);
+    }
   };
 
   const handleSelectTrack = useCallback((track: SpotifyTrack) => {
@@ -339,20 +387,23 @@ export default function SubmitSong() {
               {/* Submit Button */}
               <Pressable
                 onPress={handleSubmit}
-                disabled={submitMutation.isPending || remainingSlots <= 0}
+                disabled={submitMutation.isPending || isReplacing}
                 style={{
                   marginTop: 16,
                   alignItems: "center",
                   borderRadius: 8,
-                  backgroundColor: "#50C878",
+                  backgroundColor:
+                    remainingSlots <= 0 ? "#D97706" : "#50C878",
                   paddingVertical: 12,
                   opacity:
-                    submitMutation.isPending || remainingSlots <= 0 ? 0.5 : 1,
+                    submitMutation.isPending || isReplacing ? 0.5 : 1,
                 }}
-                accessibilityLabel="Submit song"
+                accessibilityLabel={
+                  remainingSlots <= 0 ? "Replace song" : "Submit song"
+                }
                 accessibilityRole="button"
               >
-                {submitMutation.isPending ? (
+                {submitMutation.isPending || isReplacing ? (
                   <ActivityIndicator color="#0A1A1A" size="small" />
                 ) : (
                   <Text
@@ -362,9 +413,7 @@ export default function SubmitSong() {
                       color: "#0A1A1A",
                     }}
                   >
-                    {remainingSlots <= 0
-                      ? "Submission limit reached"
-                      : "Submit Song"}
+                    {remainingSlots <= 0 ? "Replace Song" : "Submit Song"}
                   </Text>
                 )}
               </Pressable>

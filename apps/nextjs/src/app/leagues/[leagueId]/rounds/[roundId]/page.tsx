@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import {
   ArrowLeft,
   Check,
@@ -11,7 +12,9 @@ import {
   Clock,
   ExternalLink,
   ListMusic,
+  Loader2,
   Music2,
+  Trash2,
 } from "lucide-react";
 
 import type { RouterOutputs } from "@acme/api";
@@ -477,6 +480,9 @@ function PhaseContent({
   leagueId: string;
 }) {
   if (round.status === "SUBMISSION") {
+    const mySubmissions = round.submissions.filter((s) => s.isOwn);
+    const hasMaxSubmissions = mySubmissions.length >= round.songsPerRound;
+
     return (
       <div className="space-y-4">
         <Card>
@@ -495,7 +501,20 @@ function PhaseContent({
             </div>
           </CardContent>
         </Card>
-        <SubmitSong roundId={round.id} songsPerRound={round.songsPerRound} />
+
+        {mySubmissions.length > 0 && (
+          <YourSubmissions
+            submissions={mySubmissions}
+            songsPerRound={round.songsPerRound}
+            roundId={round.id}
+          />
+        )}
+
+        <SubmitSong
+          roundId={round.id}
+          songsPerRound={round.songsPerRound}
+          existingSubmissions={mySubmissions}
+        />
       </div>
     );
   }
@@ -584,4 +603,77 @@ function PhaseContent({
 
   // RESULTS or COMPLETED
   return <RoundResults roundId={round.id} />;
+}
+
+function YourSubmissions({
+  submissions,
+  songsPerRound,
+  roundId,
+}: {
+  submissions: RoundData["submissions"];
+  songsPerRound: number;
+  roundId: string;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const deleteSubmission = useMutation(
+    trpc.musicLeague.deleteSubmission.mutationOptions({
+      onSuccess: () => {
+        void queryClient.invalidateQueries(
+          trpc.musicLeague.getRoundById.queryOptions({ roundId }),
+        );
+      },
+    }),
+  );
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium">
+          {songsPerRound === 1 ? "Your Submission" : "Your Submissions"}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {submissions.map((sub) => (
+          <div
+            key={sub.id}
+            className="border-border/50 flex items-center gap-3 rounded-lg border p-3"
+          >
+            {sub.albumArtUrl ? (
+              <Image
+                src={sub.albumArtUrl}
+                alt={sub.albumName}
+                width={48}
+                height={48}
+                className="h-12 w-12 shrink-0 rounded-md object-cover"
+              />
+            ) : (
+              <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center rounded-md">
+                <Music2 className="text-muted-foreground h-5 w-5" />
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{sub.trackName}</p>
+              <p className="text-muted-foreground truncate text-xs">
+                {sub.artistName}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => deleteSubmission.mutate({ submissionId: sub.id })}
+              disabled={deleteSubmission.isPending}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-500 transition-colors hover:bg-red-500/25 disabled:opacity-50"
+              aria-label={`Remove ${sub.trackName}`}
+            >
+              {deleteSubmission.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
 }

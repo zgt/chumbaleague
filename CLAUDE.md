@@ -12,7 +12,7 @@ Chumbaleague is a Turborepo monorepo for a Music League app — a Spotify-integr
 - **Next.js 16** with React 19 for web
 - **Expo SDK 54** with React Native 0.81 for mobile
 - **tRPC v11** for type-safe API layer
-- **Drizzle ORM** with PostgreSQL (Supabase) via `@vercel/postgres`
+- **Drizzle ORM** with PostgreSQL (Supabase) via `@neondatabase/serverless`
 - **Better Auth** for authentication (Discord OAuth, session management)
 - **Tailwind CSS v4** + **NativeWind v5** for styling
 - **shadcn/ui** for web UI components
