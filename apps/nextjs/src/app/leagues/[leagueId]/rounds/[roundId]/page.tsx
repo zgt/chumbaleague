@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Clock,
   ExternalLink,
-  ListMusic,
   Loader2,
   Music2,
   Trash2,
@@ -35,17 +34,15 @@ import { toast } from "@acme/ui/toast";
 import { AppShell } from "~/components/app-shell";
 import { RoundResults } from "~/components/music/results/round-results";
 import { SubmitSong } from "~/components/music/submission/submit-song";
-import { TrackList } from "~/components/music/submission/track-list";
 import { VoteInterface } from "~/components/music/voting/vote-interface";
 import { useTRPC } from "~/trpc/react";
 import { RoundStatusBoard } from "./_components/round-status-board";
 
 type RoundData = NonNullable<RouterOutputs["musicLeague"]["getRoundById"]>;
 
-const PHASES = ["SUBMISSION", "LISTENING", "VOTING", "RESULTS"] as const;
+const PHASES = ["SUBMISSION", "VOTING", "RESULTS"] as const;
 const PHASE_LABELS: Record<string, string> = {
   SUBMISSION: "Submit",
-  LISTENING: "Listen",
   VOTING: "Vote",
   RESULTS: "Results",
   COMPLETED: "Done",
@@ -191,7 +188,7 @@ export default function RoundDetailPage() {
   const activeDeadline =
     round?.status === "SUBMISSION"
       ? new Date(round.submissionDeadline)
-      : round?.status === "LISTENING" || round?.status === "VOTING"
+      : round?.status === "VOTING"
         ? new Date(round.votingDeadline)
         : null;
 
@@ -311,9 +308,7 @@ export default function RoundDetailPage() {
                     <span className="text-muted-foreground">
                       {round.status === "SUBMISSION"
                         ? "Submissions close"
-                        : round.status === "LISTENING"
-                          ? "Voting opens"
-                          : "Voting closes"}{" "}
+                        : "Voting closes"}{" "}
                       in
                     </span>
                     <span className="font-mono font-medium">{countdown}</span>
@@ -519,85 +514,41 @@ function PhaseContent({
     );
   }
 
-  if (round.status === "LISTENING") {
+  if (round.status === "VOTING") {
     return (
       <div className="space-y-4">
-        <Card>
-          <CardContent>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
-                  <ListMusic className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Listening Phase</p>
-                  <p className="text-muted-foreground text-xs">
-                    Listen to all {round.submissions.length} tracks before
-                    voting begins
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                {round.playlistUrl && (
-                  <a
-                    href={round.playlistUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="default" size="sm">
-                      <ExternalLink className="h-4 w-4" />
-                      Spotify Playlist
-                    </Button>
-                  </a>
-                )}
-                <Link href={`/leagues/${leagueId}/rounds/${round.id}/playlist`}>
-                  <Button variant="secondary" size="sm">
-                    <ListMusic className="h-4 w-4" />
-                    Full Playlist
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <TrackList
-          tracks={round.submissions.map((s) => ({
+        {round.playlistUrl && (
+          <a
+            href={round.playlistUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <Button variant="default" className="w-full">
+              <ExternalLink className="h-4 w-4" />
+              Listen on Spotify
+            </Button>
+          </a>
+        )}
+        <VoteInterface
+          roundId={round.id}
+          submissions={round.submissions.map((s) => ({
             id: s.id,
             trackName: s.trackName,
             artistName: s.artistName,
             albumName: s.albumName,
             albumArtUrl: s.albumArtUrl,
             spotifyTrackId: s.spotifyTrackId,
-            previewUrl: s.previewUrl ?? null,
+            previewUrl: s.previewUrl,
             trackDurationMs: s.trackDurationMs,
             isOwn: s.isOwn,
           }))}
+          upvotePointsPerRound={round.upvotePointsPerRound}
+          allowDownvotes={round.allowDownvotes}
+          downvotePointValue={round.downvotePointValue}
+          memberCount={round.memberCount}
         />
       </div>
-    );
-  }
-
-  if (round.status === "VOTING") {
-    return (
-      <VoteInterface
-        roundId={round.id}
-        submissions={round.submissions.map((s) => ({
-          id: s.id,
-          trackName: s.trackName,
-          artistName: s.artistName,
-          albumName: s.albumName,
-          albumArtUrl: s.albumArtUrl,
-          spotifyTrackId: s.spotifyTrackId,
-          previewUrl: s.previewUrl,
-          trackDurationMs: s.trackDurationMs,
-          isOwn: s.isOwn,
-        }))}
-        upvotePointsPerRound={round.upvotePointsPerRound}
-        allowDownvotes={round.allowDownvotes}
-        downvotePointValue={round.downvotePointValue}
-        memberCount={round.memberCount}
-      />
     );
   }
 

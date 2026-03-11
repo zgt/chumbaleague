@@ -370,7 +370,6 @@ export default function LeagueDetailPage() {
                     {(() => {
                       const activeStatuses = [
                         "SUBMISSION",
-                        "LISTENING",
                         "VOTING",
                         "RESULTS",
                       ];
