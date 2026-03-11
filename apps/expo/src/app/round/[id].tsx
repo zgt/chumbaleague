@@ -4,6 +4,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Linking,
   Pressable,
   RefreshControl,
   Text,
@@ -43,16 +44,14 @@ import { trpc } from "~/utils/api";
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   PENDING: { bg: "rgba(138, 138, 138, 0.15)", text: "#6B7280" },
   SUBMISSION: { bg: "rgba(80, 200, 120, 0.2)", text: "#50C878" },
-  LISTENING: { bg: "rgba(100, 149, 237, 0.2)", text: "#6495ED" },
   VOTING: { bg: "rgba(255, 165, 0, 0.2)", text: "#FFA500" },
   RESULTS: { bg: "rgba(147, 112, 219, 0.2)", text: "#9370DB" },
   COMPLETED: { bg: "rgba(138, 138, 138, 0.2)", text: "#8A8A8A" },
 };
 
-const PHASE_STEPS = ["SUBMISSION", "LISTENING", "VOTING", "RESULTS"] as const;
+const PHASE_STEPS = ["SUBMISSION", "VOTING", "RESULTS"] as const;
 const PHASE_LABELS: Record<string, string> = {
   SUBMISSION: "Submit",
-  LISTENING: "Listen",
   VOTING: "Vote",
   RESULTS: "Results",
 };
@@ -297,14 +296,29 @@ export default function RoundDetails() {
               )}
 
               {/* View Playlist Button */}
-              {["LISTENING", "VOTING", "RESULTS", "COMPLETED"].includes(
+              {["VOTING", "RESULTS", "COMPLETED"].includes(
                 round.status,
               ) && (
                 <ViewPlaylistButton
                   roundId={id}
                   trackCount={round.submissions.length}
-                  showTrackCount={round.status === "LISTENING"}
+                  showTrackCount={round.status === "VOTING"}
                 />
+              )}
+
+              {/* Listen on Spotify */}
+              {round.status === "VOTING" && round.playlistUrl && (
+                <Pressable
+                  onPress={() => Linking.openURL(round.playlistUrl!)}
+                  className="mx-4 mb-4 flex-row items-center justify-center gap-2 rounded-xl py-3"
+                  style={{ backgroundColor: "#1DB954" }}
+                >
+                  <Music size={20} color="#fff" />
+                  <Text className="text-base font-bold text-white">
+                    Listen on Spotify
+                  </Text>
+                  <Link size={16} color="#fff" />
+                </Pressable>
               )}
 
               {/* Voting Phase */}
@@ -1617,8 +1631,7 @@ function VoteCommentDetails({
 /* ─── Admin Controls ─── */
 
 const PHASE_NEXT_LABELS: Record<string, string> = {
-  SUBMISSION: "Listening",
-  LISTENING: "Voting",
+  SUBMISSION: "Voting",
   VOTING: "Results",
   RESULTS: "Completed",
 };
