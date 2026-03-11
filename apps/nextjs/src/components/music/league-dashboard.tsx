@@ -88,7 +88,7 @@ export function LeagueDashboard() {
               ))}
             </div>
           ) : leagues && leagues.length > 0 ? (
-            <div className="space-y-4">
+            <div className="flex flex-col gap-3">
               {leagues.map((league) => {
                 const activeRound = league.currentRound;
                 return (

@@ -15,6 +15,14 @@ const baseUrl =
       ? `https://${env.VERCEL_URL}`
       : (env.AUTH_REDIRECT_PROXY_URL ?? "http://localhost:3000");
 
+console.log("[AUTH DEBUG]", {
+  VERCEL_ENV: env.VERCEL_ENV,
+  VERCEL_URL: env.VERCEL_URL,
+  AUTH_REDIRECT_PROXY_URL: env.AUTH_REDIRECT_PROXY_URL,
+  resolvedBaseUrl: baseUrl,
+  resolvedProductionUrl: env.AUTH_REDIRECT_PROXY_URL ?? "https://music.calayo.net",
+});
+
 export const auth = initAuth({
   baseUrl,
   productionUrl:
