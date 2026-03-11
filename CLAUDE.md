@@ -147,7 +147,7 @@ Leagues → Rounds → Submissions → Votes. Friends join leagues via invite co
 
 ### Round Lifecycle (State Machine)
 
-`PENDING` → `SUBMISSION` → `LISTENING` → `VOTING` → `RESULTS` → `COMPLETED`
+`PENDING` → `SUBMISSION` → `VOTING` → `RESULTS` → `COMPLETED`
 
 - Only OWNER/ADMIN can create rounds or advance phases
 - One PENDING round per league max — auto-activates when current round completes
@@ -157,7 +157,7 @@ Leagues → Rounds → Submissions → Votes. Friends join leagues via invite co
 
 This is critical — the API returns different data based on round status:
 - **SUBMISSION**: Only submitter sees their own submission
-- **LISTENING/VOTING**: Submitter identity hidden (anonymous). Own submission marked `isOwn`
+- **VOTING**: Submitter identity hidden (anonymous). Own submission marked `isOwn`
 - **RESULTS/COMPLETED**: Full reveal — all votes, comments, submitter names, points
 
 ### Key Domain Rules

@@ -75,11 +75,14 @@ async function checkAutoAdvance(db: typeof _db, roundId: string) {
     }
     if (submitterIds.size < memberCount) return;
 
-    // All members submitted — advance to LISTENING
+    // All members submitted — advance to VOTING
     await db
       .update(Round)
-      .set({ status: "LISTENING" })
+      .set({ status: "VOTING" })
       .where(eq(Round.id, roundId));
+
+    void notifyVotingOpen(roundId);
+    void pushNotifyVotingOpen(roundId);
   } else if (round.status === "VOTING") {
     // Check if all members have voted
     const voterIds = new Set<string>();
@@ -717,8 +720,7 @@ export const musicLeagueRouter = {
             return null;
           }
 
-          const hideSubmitter =
-            round.status === "LISTENING" || round.status === "VOTING";
+          const hideSubmitter = round.status === "VOTING";
 
           return {
             ...sub,
@@ -1288,7 +1290,6 @@ export const musicLeagueRouter = {
 
       const phaseOrder = [
         "SUBMISSION",
-        "LISTENING",
         "VOTING",
         "RESULTS",
         "COMPLETED",

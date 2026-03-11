@@ -20,7 +20,6 @@ export const memberRoleEnum = pgEnum("member_role", [
 export const roundStatusEnum = pgEnum("round_status", [
   "PENDING",
   "SUBMISSION",
-  "LISTENING",
   "VOTING",
   "RESULTS",
   "COMPLETED",

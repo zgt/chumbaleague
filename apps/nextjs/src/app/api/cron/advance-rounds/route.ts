@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 import {
   notifyResultsAvailable,
   notifyRoundStarted,
+  notifyVotingOpen,
 } from "@acme/api/notifications";
 import {
   pushNotifyResultsAvailable,
   pushNotifyRoundStarted,
+  pushNotifyVotingOpen,
 } from "@acme/api/push-notifications";
 import { and, eq } from "@acme/db";
 import { db } from "@acme/db/client";
@@ -64,7 +66,7 @@ export async function GET(request: Request) {
   const now = new Date();
   let advanced = 0;
 
-  // Find SUBMISSION rounds past their deadline → advance to LISTENING
+  // Find SUBMISSION rounds past their deadline → advance to VOTING
   const submissionRounds = await db.query.Round.findMany({
     where: eq(Round.status, "SUBMISSION"),
   });
@@ -74,8 +76,11 @@ export async function GET(request: Request) {
 
     await db
       .update(Round)
-      .set({ status: "LISTENING" })
+      .set({ status: "VOTING" })
       .where(eq(Round.id, round.id));
+
+    void notifyVotingOpen(round.id);
+    void pushNotifyVotingOpen(round.id);
     advanced++;
   }
 
