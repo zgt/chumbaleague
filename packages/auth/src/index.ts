@@ -26,6 +26,7 @@ export function initAuth<
     plugins: [
       oAuthProxy({
         productionURL: options.productionUrl,
+        currentURL: options.baseUrl,
       }),
       expo(),
       ...(options.extraPlugins ?? []),
@@ -37,7 +38,11 @@ export function initAuth<
         redirectURI: `${options.productionUrl}/api/auth/callback/discord`,
       },
     },
-    trustedOrigins: ["chumbaleague://"],
+    trustedOrigins: [
+      "chumbaleague://",
+      options.productionUrl,
+      options.baseUrl,
+    ],
     onAPIError: {
       onError(error, ctx) {
         console.error("BETTER AUTH API ERROR", error, ctx);
