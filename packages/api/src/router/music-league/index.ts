@@ -826,7 +826,7 @@ export const musicLeagueRouter = {
       if (duplicate) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Track already submitted",
+          message: "This song has already been submitted by another player",
         });
       }
 
